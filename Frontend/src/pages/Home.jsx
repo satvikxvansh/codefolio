@@ -1,55 +1,66 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { TrendingUp, ExternalLink, Award, Target, Calendar, Activity } from 'lucide-react';
 import UsernameModal from '../components/UsernameModal';
 
 const CodingProfileDashboard = () => {
-
-  let formData = null;
-
-  const [ showModal, setShowModal ] = useState(false)
+  const [formData, setFormData] = useState({});
+  const [showModal, setShowModal] = useState(false)
+  const [LeetcodeData, setLeetcodeData] = useState({});
+  const [codeforcesData, setCodeforcesData] = useState({});
 
   const closeModal = () => {
     setShowModal(false);
   }
 
   const onSubmit = (formData) => {
-    formData = formData
-    console.log(formData)
+    setFormData(formData)
     setShowModal(false);
-
   }
+
   // Placeholder functions for API calls
-  const fetchLeetCodeData = async () => {
-    // API call implementation here
-  };
+  useEffect(() => {
+    if (formData.leetcode !== undefined) {
+      fetch(`http://localhost:3000/api/leetcode?username=${formData.leetcode}`)
+        .then(async res => await res.json())
+        .then(res => {
+          setLeetcodeData(res.data.matchedUser)
+          console.log(res.data.matchedUser);
+        })
+        .catch(console.error);
+    }
+  }, [formData.leetcode])
 
-  const fetchCodeforcesData = async () => {
-    // API call implementation here
-  };
-
-  const fetchCodeChefData = async () => {
-    // API call implementation here
-  };
+  useEffect(() => {
+    if (formData.codeforces !== undefined) {
+      fetch(`http://localhost:3000/api/codeforces?username=${formData.codeforces}`)
+        .then(async res => await res.json())
+        .then(res => {
+          setCodeforcesData(res.result)
+          console.log(res.result);
+        })
+        .catch(console.error);
+    }
+  }, [formData.codeforces])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-8 py-4">
+      <header className="bg-black/45 border-b border-gray-200 px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-xl">{'<>'}</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-800">CodeStats</h1>
+            <h1 className="text-2xl font-bold text-zinc-200">CodeStats</h1>
           </div>
           <div className="flex items-center gap-4">
-            <button className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium" onClick={() => setShowModal(true)}>
+            <button className="cursor-pointer px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium" onClick={() => setShowModal(true)}>
               Sync Data
             </button>
-            <UsernameModal isOpen={showModal} onClose={closeModal} onSubmit={onSubmit}/>
+            <UsernameModal isOpen={showModal} onClose={closeModal} onSubmit={onSubmit} />
             <div className="flex items-center gap-3">
-              <img 
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" 
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
                 alt="Profile"
                 className="w-10 h-10 rounded-full"
               />
@@ -65,14 +76,14 @@ const CodingProfileDashboard = () => {
       {/* Main Content */}
       <main className="px-8 py-6">
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">Dashboard</h2>
+          <h2 className="text-3xl font-bold text-zinc-200">Dashboard</h2>
           <p className="text-gray-500 mt-1">Track your competitive programming journey across platforms.</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {/* Total Problems Solved */}
-          <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
+          {/* <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium opacity-90">Total Problems Solved</h3>
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -84,48 +95,97 @@ const CodingProfileDashboard = () => {
               <TrendingUp size={14} />
               <span>Increased from last month</span>
             </div>
+          </div> */}
+
+          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
+            <div className="flex justify-centeritems-center mb-4">
+              <h3 className="text-sm font-medium text-gray-400">Total Questions</h3>
+            </div>
+            <p className="flex justify-center text-8xl font-bold text-zinc-200 mb-8">342</p>
+            <div>
+              <div className="flex justify-center items-center mb-4">
+                <h3 className="text-sm font-medium text-gray-400">Total Contests Attended</h3>
+              </div>
+              <p className="flex justify-center text-6xl font-bold text-zinc-200">20</p>
+
+            </div>
           </div>
 
           {/* LeetCode Stats */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600">LeetCode Problems</h3>
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+              <h3 className="text-sm font-medium text-gray-400">LeetCode Problems</h3>
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center cursor-pointer">
                 <ExternalLink size={16} className="text-orange-600" />
               </div>
             </div>
-            <p className="text-4xl font-bold text-gray-800 mb-2">342</p>
-            <div className="flex items-center gap-1 text-sm text-emerald-600">
-              <TrendingUp size={14} />
-              <span>Increased from last month</span>
+            <p className="text-4xl font-bold text-zinc-200 mb-8">{LeetcodeData.submitStats.acSubmissionNum[0].count}</p>
+            <div>
+              <div className='my-2 flex justify-between text-xl bg-[#264545] px-2 py-1 rounded-md'>
+                <p className='text-[#1cbaba] font-semibold'>Easy</p>
+                <p className='text-white font-bold'>{LeetcodeData.submitStats.acSubmissionNum[1].count}</p>
+              </div>
+              <div className='my-2 flex justify-between text-xl bg-[#534520] px-2 py-1 rounded-md'>
+                <p className='text-[#ffb700] font-semibold'>Medium</p>
+                <p className='text-white font-bold'>{LeetcodeData.submitStats.acSubmissionNum[2].count}</p>
+              </div>
+              <div className='my-2 flex justify-between text-xl bg-[#512b2b] px-2 py-1 rounded-md'>
+                <p className='text-[#f63737] font-semibold'>Hard</p>
+                <p className='text-white font-bold'>{LeetcodeData.submitStats.acSubmissionNum[3].count}</p>
+              </div>
             </div>
           </div>
 
           {/* Codeforces Rating */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600">Codeforces Rating</h3>
+              <h3 className="text-sm font-medium text-gray-400">Codeforces Rating</h3>
               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                 <ExternalLink size={16} className="text-blue-600" />
               </div>
             </div>
-            <p className="text-4xl font-bold text-gray-800 mb-2">1547</p>
-            <div className="flex items-center gap-1 text-sm text-emerald-600">
-              <TrendingUp size={14} />
-              <span>Increased from last month</span>
+            <p className="mb-8 text-4xl font-bold text-zinc-200">{codeforcesData[0].rating}</p>
+
+            <div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Title</p>
+                <p className='text-white'>{codeforcesData[0].rank}</p>
+              </div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Max. Rating</p>
+                <p className='text-white'>{codeforcesData[0].maxRating}</p>
+              </div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Problems Solved</p>
+                <p className='text-white'>api.call</p>
+              </div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Contributions</p>
+                <p className='text-white'>{codeforcesData[0].contribution}</p>
+              </div>
             </div>
           </div>
 
           {/* Current Streak */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-600">Current Streak</h3>
+              <h3 className="text-sm font-medium text-gray-400">Current Streak</h3>
               <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                 <Activity size={16} className="text-purple-600" />
               </div>
             </div>
-            <p className="text-4xl font-bold text-gray-800 mb-2">23</p>
-            <p className="text-sm text-gray-600">Days</p>
+            <p className="text-4xl font-bold text-zinc-200 mb-2">23</p>
+            <p className="text-sm text-gray-400">Days</p>
+            <div className='my-5 '>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Leetcode</p>
+                <p className='text-white font-bold'>api.call</p>
+              </div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Codeforces</p>
+                <p className='text-white font-bold'>api.call</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -156,7 +216,7 @@ const CodingProfileDashboard = () => {
                   View All
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 {/* LeetCode */}
                 <div>
@@ -173,7 +233,7 @@ const CodingProfileDashboard = () => {
                     <span className="font-bold text-gray-800">342</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-orange-400 to-orange-600 h-2 rounded-full" style={{width: '40%'}}></div>
+                    <div className="bg-gradient-to-r from-orange-400 to-orange-600 h-2 rounded-full" style={{ width: '40%' }}></div>
                   </div>
                 </div>
 
@@ -192,7 +252,7 @@ const CodingProfileDashboard = () => {
                     <span className="font-bold text-gray-800">287</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full" style={{width: '34%'}}></div>
+                    <div className="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full" style={{ width: '34%' }}></div>
                   </div>
                 </div>
 
@@ -211,7 +271,7 @@ const CodingProfileDashboard = () => {
                     <span className="font-bold text-gray-800">218</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-amber-400 to-amber-600 h-2 rounded-full" style={{width: '26%'}}></div>
+                    <div className="bg-gradient-to-r from-amber-400 to-amber-600 h-2 rounded-full" style={{ width: '26%' }}></div>
                   </div>
                 </div>
               </div>
@@ -228,7 +288,7 @@ const CodingProfileDashboard = () => {
                   <span className="text-xl">+</span>
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -265,7 +325,7 @@ const CodingProfileDashboard = () => {
             {/* Overall Progress */}
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 mb-6">Overall Progress</h3>
-              
+
               <div className="relative w-48 h-48 mx-auto mb-6">
                 <svg className="w-full h-full transform -rotate-90">
                   <circle

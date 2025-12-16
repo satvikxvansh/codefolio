@@ -7,15 +7,16 @@ app.use(cors());
 
 let details = null;
 
-app.use('/api/codeforces/info', async (req, res) => {
+app.get('/api/codeforces', async (req, res) => {
   const { username } = req.query;
-  if (!username) return res.status(400).json({ error: 'Username required' });
+  if(username === "" && !username) return res.status(400).json({ error: 'Username required' });
 
   try {
-    const response = await fetch(`https://codeforces.com/api/user.rating?handle=${ username }`, {
-      body: JSON.stringify({ variables: { username } }), //here we give the username
-    });
+    const response = await fetch(`https://codeforces.com/api/user.info?handles=${username}`);
     const data = await response.json();
+    if(data.status !== "OK") {
+      return res.status(404).json({error: 'Codeforces user not found'})
+    }
     res.json(data);
   }catch (err) {
     console.error(err);
