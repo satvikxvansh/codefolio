@@ -112,59 +112,71 @@ const CodingProfileDashboard = () => {
           </div>
 
           {/* LeetCode Stats */}
-          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-400">LeetCode Problems</h3>
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center cursor-pointer">
-                <ExternalLink size={16} className="text-orange-600" />
+          {(Object.keys(LeetcodeData).length !== 0) ? 
+            <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium text-gray-400">LeetCode Problems</h3>
+                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center cursor-pointer">
+                  <ExternalLink size={16} className="text-orange-600" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-zinc-200 mb-8">{LeetcodeData?.submitStats?.acSubmissionNum[0]?.count}</p>
+              <div>
+                <div className='my-2 flex justify-between text-xl bg-[#264545] px-2 py-1 rounded-md'>
+                  <p className='text-[#1cbaba] font-semibold'>Easy</p>
+                  <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[1]?.count}</p>
+                </div>
+                <div className='my-2 flex justify-between text-xl bg-[#534520] px-2 py-1 rounded-md'>
+                  <p className='text-[#ffb700] font-semibold'>Medium</p>
+                  <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[2]?.count}</p>
+                </div>
+                <div className='my-2 flex justify-between text-xl bg-[#512b2b] px-2 py-1 rounded-md'>
+                  <p className='text-[#f63737] font-semibold'>Hard</p>
+                  <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[3]?.count}</p>
+                </div>
               </div>
             </div>
-            <p className="text-4xl font-bold text-zinc-200 mb-8">{LeetcodeData.submitStats.acSubmissionNum[0].count}</p>
-            <div>
-              <div className='my-2 flex justify-between text-xl bg-[#264545] px-2 py-1 rounded-md'>
-                <p className='text-[#1cbaba] font-semibold'>Easy</p>
-                <p className='text-white font-bold'>{LeetcodeData.submitStats.acSubmissionNum[1].count}</p>
-              </div>
-              <div className='my-2 flex justify-between text-xl bg-[#534520] px-2 py-1 rounded-md'>
-                <p className='text-[#ffb700] font-semibold'>Medium</p>
-                <p className='text-white font-bold'>{LeetcodeData.submitStats.acSubmissionNum[2].count}</p>
-              </div>
-              <div className='my-2 flex justify-between text-xl bg-[#512b2b] px-2 py-1 rounded-md'>
-                <p className='text-[#f63737] font-semibold'>Hard</p>
-                <p className='text-white font-bold'>{LeetcodeData.submitStats.acSubmissionNum[3].count}</p>
-              </div>
+            :
+            <div className='bg-zinc-900 flex justify-center items-center rounded-xl p-6 shadow-sm border border-zinc-700'>
+              <h3 className="text-sm font-medium text-gray-400">Please enter your details</h3>
             </div>
-          </div>
+          }
 
           {/* Codeforces Rating */}
-          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-400">Codeforces Rating</h3>
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <ExternalLink size={16} className="text-blue-600" />
+          {(Object.keys(codeforcesData).length !== 0) ? 
+            <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium text-gray-400">Codeforces Rating</h3>
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <ExternalLink size={16} className="text-blue-600" />
+                </div>
               </div>
-            </div>
-            <p className="mb-8 text-4xl font-bold text-zinc-200">{codeforcesData[0].rating}</p>
+              <p className="mb-8 text-4xl font-bold text-zinc-200">{codeforcesData[0]?.rating}</p>
 
-            <div>
-              <div className='flex justify-between text-xl py-1 rounded-md'>
-                <p className='text-zinc-300 '>Title</p>
-                <p className='text-white'>{codeforcesData[0].rank}</p>
-              </div>
-              <div className='flex justify-between text-xl py-1 rounded-md'>
-                <p className='text-zinc-300 '>Max. Rating</p>
-                <p className='text-white'>{codeforcesData[0].maxRating}</p>
-              </div>
-              <div className='flex justify-between text-xl py-1 rounded-md'>
-                <p className='text-zinc-300 '>Problems Solved</p>
-                <p className='text-white'>api.call</p>
-              </div>
-              <div className='flex justify-between text-xl py-1 rounded-md'>
-                <p className='text-zinc-300 '>Contributions</p>
-                <p className='text-white'>{codeforcesData[0].contribution}</p>
+              <div>
+                <div className='flex justify-between text-xl py-1 rounded-md'>
+                  <p className='text-zinc-300 '>Title</p>
+                  <p className='text-white'>{codeforcesData[0]?.rank}</p>
+                </div>
+                <div className='flex justify-between text-xl py-1 rounded-md'>
+                  <p className='text-zinc-300 '>Max. Rating</p>
+                  <p className='text-white'>{codeforcesData[0]?.maxRating}</p>
+                </div>
+                <div className='flex justify-between text-xl py-1 rounded-md'>
+                  <p className='text-zinc-300 '>Problems Solved</p>
+                  <p className='text-white'>api.call</p>
+                </div>
+                <div className='flex justify-between text-xl py-1 rounded-md'>
+                  <p className='text-zinc-300 '>Contributions</p>
+                  <p className='text-white'>{codeforcesData[0]?.contribution}</p>
+                </div>
               </div>
             </div>
-          </div>
+            :
+            <div className='bg-zinc-900 flex justify-center items-center rounded-xl p-6 shadow-sm border border-zinc-700'>
+              <h3 className="text-sm font-medium text-gray-400">Please enter your details</h3>
+            </div>
+          }
 
           {/* Current Streak */}
           <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
