@@ -1,4 +1,5 @@
 const express = require("express");
+require('dotenv').config()
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -6,9 +7,9 @@ const jwt = require("jsonwebtoken");
 // const JWT_SECRET = "verysecretmessage"
 const { userModel, leetcodeModel, codeforcesModel } = require("./db");
 
-// yemeranayapass
+const MONGODB_URI = process.env.MONGODB_URL;
 
-mongoose.connect("mongodb+srv://satvikvansh_db_user:yemeranayapass@cluster1learning.le5zebq.mongodb.net/codefolio-project")
+mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to Database'))
   .catch(err => console.error('Could not connect to Database', err));
 
