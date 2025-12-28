@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { TrendingUp, ExternalLink, Award, Target, Calendar, Activity } from 'lucide-react';
 import UsernameModal from '../components/UsernameModal';
 
-const CodingProfileDashboard = () => {
+const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
+  const user = userData;
   const [formData, setFormData] = useState({});
   const [showModal, setShowModal] = useState(false)
   const [LeetcodeData, setLeetcodeData] = useState({});
@@ -16,6 +18,18 @@ const CodingProfileDashboard = () => {
     setFormData(formData)
     setShowModal(false);
   }
+
+  const logout = async () => {
+    await axios.post("http://localhost:3000/logout",{}, {
+      withCredentials: true
+    }).then(() => {
+      console.log("logged out")
+      setIsLoggedIn(false);
+    }).catch(error => {
+      console.log(error);
+    })
+  }
+
 
   // Placeholder functions for API calls
   useEffect(() => {
@@ -65,8 +79,11 @@ const CodingProfileDashboard = () => {
                 className="w-10 h-10 rounded-full"
               />
               <div>
-                <p className="font-semibold text-gray-800">Your Name</p>
-                <p className="text-sm text-gray-500">yourname@email.com</p>
+                <p className="font-semibold text-gray-800">{user?.name}</p>
+                <p className="text-sm text-gray-500">{user?.email}</p>
+              </div>
+              <div>
+                <button className="cursor-pointer px-6 py-2.5 bg-white text-red-600 rounded-lg hover:bg-red-300 transition-colors font-medium" onClick={logout}>Logout</button>
               </div>
             </div>
           </div>
@@ -112,7 +129,7 @@ const CodingProfileDashboard = () => {
           </div>
 
           {/* LeetCode Stats */}
-          {(Object.keys(LeetcodeData).length !== 0) ? 
+          {(Object.keys(LeetcodeData).length !== 0) ?
             <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-gray-400">LeetCode Problems</h3>
@@ -143,7 +160,7 @@ const CodingProfileDashboard = () => {
           }
 
           {/* Codeforces Rating */}
-          {(Object.keys(codeforcesData).length !== 0) ? 
+          {(Object.keys(codeforcesData).length !== 0) ?
             <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-gray-400">Codeforces Rating</h3>

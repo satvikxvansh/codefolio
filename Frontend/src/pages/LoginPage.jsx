@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const LoginPage = () => {
+const LoginPage = ({ setIsLoggedIn }) => {
   const [isSignUp, setIsSignUp] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,14 +23,22 @@ const LoginPage = () => {
     e.preventDefault();
     if (isSignUp) {
       console.log('Sign Up:', formData);
-      await axios.post("http://localhost:3000/signup", formData)
-      .then()
-      .catch(error => {
-        console.log("couldn't send post request to backend");
+      await axios.post("http://localhost:3000/signup", formData, { withCredentials: true })
+      .then(() =>{
+        setIsLoggedIn(true);
+        // navigate("/"); 
+      }).catch((err) => {
+        console.log("couldn't send post request to backend", err);
       })
     } else {
       console.log('Sign In:', formData);
-      // await axios.post(" ", formData);
+      await axios.post("http://localhost:3000/signin", formData, { withCredentials: true })
+      .then(() =>{
+        setIsLoggedIn(true);
+        // navigate("/"); 
+      }).catch(error => {
+        console.log("couldn't send post request to backend");
+      })
     }
     setIsLoading(false);
   };
