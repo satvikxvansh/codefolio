@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { TrendingUp, ExternalLink, Award, Target, Calendar, Activity } from 'lucide-react';
+import { CircleArrowUp, TrendingUp, ExternalLink, Award, Target, Calendar, Activity } from 'lucide-react';
 import UsernameModal from '../components/UsernameModal';
+
 
 const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
   const user = userData;
@@ -20,7 +21,7 @@ const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
   }
 
   const logout = async () => {
-    await axios.post("http://localhost:3000/logout",{}, {
+    await axios.post("http://localhost:3000/logout", {}, {
       withCredentials: true
     }).then(() => {
       console.log("logged out")
@@ -65,7 +66,7 @@ const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
             <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-xl">{'<>'}</span>
             </div>
-            <h1 className="text-2xl font-bold text-zinc-200">CodeStats</h1>
+            <h1 className="text-2xl font-bold font-grotesk text-zinc-200">Codefolio</h1>
           </div>
           <div className="flex items-center gap-4">
             <button className="cursor-pointer px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium" onClick={() => setShowModal(true)}>
@@ -90,110 +91,40 @@ const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Dashboard */}
       <main className="px-8 py-6">
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-zinc-200">Dashboard</h2>
+          <h2 className="text-3xl font-bodoni italic text-zinc-200">Dashboard</h2>
           <p className="text-gray-500 mt-1">Track your competitive programming journey across platforms.</p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Hero Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {/* Total Problems Solved */}
-          {/* <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
+          <div className="bg-gradient-to-br flex flex-col justify-between from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium opacity-90">Total Problems Solved</h3>
+              <h3 className="text-md font-medium opacity-90">Total Problems Solved</h3>
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                 <ExternalLink size={16} />
               </div>
             </div>
-            <p className="text-4xl font-bold mb-2">847</p>
-            <div className="flex items-center gap-1 text-sm opacity-90">
+            <div className="text-8xl flex justify-center font-bold mb-2">847</div>
+            <div className="flex justify-center gap-1 text-sm opacity-90">
               <TrendingUp size={14} />
               <span>Increased from last month</span>
             </div>
-          </div> */}
-
-          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
-            <div className="flex justify-centeritems-center mb-4">
-              <h3 className="text-sm font-medium text-gray-400">Total Questions</h3>
-            </div>
-            <p className="flex justify-center text-8xl font-bold text-zinc-200 mb-8">342</p>
-            <div>
-              <div className="flex justify-center items-center mb-4">
-                <h3 className="text-sm font-medium text-gray-400">Total Contests Attended</h3>
-              </div>
-              <p className="flex justify-center text-6xl font-bold text-zinc-200">20</p>
-
-            </div>
           </div>
 
-          {/* LeetCode Stats */}
-          {(Object.keys(LeetcodeData).length !== 0) ?
-            <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-400">LeetCode Problems</h3>
-                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center cursor-pointer">
-                  <ExternalLink size={16} className="text-orange-600" />
-                </div>
-              </div>
-              <p className="text-4xl font-bold text-zinc-200 mb-8">{LeetcodeData?.submitStats?.acSubmissionNum[0]?.count}</p>
-              <div>
-                <div className='my-2 flex justify-between text-xl bg-[#264545] px-2 py-1 rounded-md'>
-                  <p className='text-[#1cbaba] font-semibold'>Easy</p>
-                  <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[1]?.count}</p>
-                </div>
-                <div className='my-2 flex justify-between text-xl bg-[#534520] px-2 py-1 rounded-md'>
-                  <p className='text-[#ffb700] font-semibold'>Medium</p>
-                  <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[2]?.count}</p>
-                </div>
-                <div className='my-2 flex justify-between text-xl bg-[#512b2b] px-2 py-1 rounded-md'>
-                  <p className='text-[#f63737] font-semibold'>Hard</p>
-                  <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[3]?.count}</p>
-                </div>
-              </div>
+          <div className="bg-zinc-900 flex flex-col justify-between rounded-xl items-center p-6 shadow-sm border border-zinc-700">
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-gray-400">Global Rank</h3>
             </div>
-            :
-            <div className='bg-zinc-900 flex justify-center items-center rounded-xl p-6 shadow-sm border border-zinc-700'>
-              <h3 className="text-sm font-medium text-gray-400">Please enter your details</h3>
+            <div className="text-8xl font-bold text-zinc-200 mb-8">1st</div>
+            <div className="text-lime-300 font-bold flex items-center gap-2 text-lg opacity-90">
+              <CircleArrowUp/>
+              <span>2</span>
             </div>
-          }
-
-          {/* Codeforces Rating */}
-          {(Object.keys(codeforcesData).length !== 0) ?
-            <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-400">Codeforces Rating</h3>
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <ExternalLink size={16} className="text-blue-600" />
-                </div>
-              </div>
-              <p className="mb-8 text-4xl font-bold text-zinc-200">{codeforcesData[0]?.rating}</p>
-
-              <div>
-                <div className='flex justify-between text-xl py-1 rounded-md'>
-                  <p className='text-zinc-300 '>Title</p>
-                  <p className='text-white'>{codeforcesData[0]?.rank}</p>
-                </div>
-                <div className='flex justify-between text-xl py-1 rounded-md'>
-                  <p className='text-zinc-300 '>Max. Rating</p>
-                  <p className='text-white'>{codeforcesData[0]?.maxRating}</p>
-                </div>
-                <div className='flex justify-between text-xl py-1 rounded-md'>
-                  <p className='text-zinc-300 '>Problems Solved</p>
-                  <p className='text-white'>api.call</p>
-                </div>
-                <div className='flex justify-between text-xl py-1 rounded-md'>
-                  <p className='text-zinc-300 '>Contributions</p>
-                  <p className='text-white'>{codeforcesData[0]?.contribution}</p>
-                </div>
-              </div>
-            </div>
-            :
-            <div className='bg-zinc-900 flex justify-center items-center rounded-xl p-6 shadow-sm border border-zinc-700'>
-              <h3 className="text-sm font-medium text-gray-400">Please enter your details</h3>
-            </div>
-          }
+          </div>
 
           {/* Current Streak */}
           <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
@@ -216,15 +147,101 @@ const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
               </div>
             </div>
           </div>
+
+          {/* Contest History */}
+          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-400">Contest Ratings</h3>
+              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                <Activity size={16} className="text-purple-600" />
+              </div>
+            </div>
+            <div className="text-4xl font-bold text-zinc-200 mb-2">1500 <h2 className='text-xl'>(max. 1550)</h2></div>
+            <div className='my-5 '>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <button className='text-zinc-300 cursor-pointer py-1 px-2 rounded-md focus:bg-gray-50/10 hover:bg-gray-50/10'>Leetcode</button>
+                <p className='text-gray-600'>Attended</p>
+              </div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <button className='cursor-pointer py-1 px-2 rounded-md focus:bg-gray-50/10 hover:bg-gray-50/10 text-zinc-300'>Codeforces</button>
+                <p className='text-gray-600'>Attended</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Platform specific details */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+
+          {/* LeetCode Stats */}
+          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-400">LeetCode Problems</h3>
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center cursor-pointer">
+                <ExternalLink size={16} className="text-orange-600" />
+              </div>
+            </div>
+            <p className="text-4xl font-bold text-zinc-200 mb-8">{LeetcodeData?.submitStats?.acSubmissionNum[0]?.count}</p>
+            <div>
+              <div className='my-2 flex justify-between text-xl bg-[#264545] px-2 py-1 rounded-md'>
+                <p className='text-[#1cbaba] font-semibold'>Easy</p>
+                <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[1]?.count}</p>
+              </div>
+              <div className='my-2 flex justify-between text-xl bg-[#534520] px-2 py-1 rounded-md'>
+                <p className='text-[#ffb700] font-semibold'>Medium</p>
+                <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[2]?.count}</p>
+              </div>
+              <div className='my-2 flex justify-between text-xl bg-[#512b2b] px-2 py-1 rounded-md'>
+                <p className='text-[#f63737] font-semibold'>Hard</p>
+                <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[3]?.count}</p>
+              </div>
+            </div>
+          </div>
+
+
+          {/* Codeforces Rating */}
+          <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-zinc-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-400">Codeforces Rating</h3>
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <ExternalLink size={16} className="text-blue-600" />
+              </div>
+            </div>
+            <p className="mb-8 text-4xl font-bold text-zinc-200">{codeforcesData[0]?.rating}</p>
+
+            <div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Title</p>
+                <p className='text-white'>{codeforcesData[0]?.rank}</p>
+              </div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Max. Rating</p>
+                <p className='text-white'>{codeforcesData[0]?.maxRating}</p>
+              </div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Problems Solved</p>
+                <p className='text-white'>api.call</p>
+              </div>
+              <div className='flex justify-between text-xl py-1 rounded-md'>
+                <p className='text-zinc-300 '>Contributions</p>
+                <p className='text-white'>{codeforcesData[0]?.contribution}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900 flex justify-center items-center rounded-xl p-6 shadow-sm border border-zinc-700 col-span-2">
+            <h3 className="text-sm font-medium text-gray-400">Heatmap coming soon...</h3>
+          </div>
         </div>
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - 2/3 width */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Platform Analytics */}
-            {/* <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800 mb-6">Problem Solving Activity</h3>
+
+            {/* Problem Solving Activity */}
+            <div className="bg-zinc-900 rounded-xl p-6 shadow-sm border border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-400 mb-6">Problem Solving Activity</h3>
               <div className="flex items-end justify-between h-64 gap-3">
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
                   <div key={day} className="flex-1 flex flex-col items-center gap-2">
@@ -235,7 +252,7 @@ const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
                   </div>
                 ))}
               </div>
-            </div> */}
+            </div>
 
             {/* Platform Breakdown */}
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
@@ -309,6 +326,21 @@ const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
 
           {/* Right Column - 1/3 width */}
           <div className="space-y-6">
+            {/* Upcoming Contests */}
+            <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
+              <h3 className="text-lg font-semibold mb-4">Next Contest</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm opacity-90">
+                  <Calendar size={16} />
+                  <span>Codeforces Round #920</span>
+                </div>
+                <p className="text-2xl font-bold">02:15:30</p>
+                <p className="text-sm opacity-90">Time remaining</p>
+                <button className="w-full mt-4 bg-white/20 hover:bg-white/30 py-2.5 rounded-lg font-medium transition-colors">
+                  Set Reminder
+                </button>
+              </div>
+            </div>
             {/* Recent Achievements */}
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-6">
@@ -401,21 +433,7 @@ const CodingProfileDashboard = ({ userData, setIsLoggedIn }) => {
               </div>
             </div>
 
-            {/* Upcoming Contests */}
-            <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
-              <h3 className="text-lg font-semibold mb-4">Next Contest</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm opacity-90">
-                  <Calendar size={16} />
-                  <span>Codeforces Round #920</span>
-                </div>
-                <p className="text-2xl font-bold">02:15:30</p>
-                <p className="text-sm opacity-90">Time remaining</p>
-                <button className="w-full mt-4 bg-white/20 hover:bg-white/30 py-2.5 rounded-lg font-medium transition-colors">
-                  Set Reminder
-                </button>
-              </div>
-            </div>
+            
           </div>
         </div>
       </main>

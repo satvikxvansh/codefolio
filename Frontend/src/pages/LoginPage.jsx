@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const LoginPage = ({ setIsLoggedIn }) => {
   const [isSignUp, setIsSignUp] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,7 +19,7 @@ const LoginPage = ({ setIsLoggedIn }) => {
   };
 
   const handleSubmit = async (e) => {
-    setIsLoading(true);
+    // setIsLoading(true);
     e.preventDefault();
     if (isSignUp) {
       console.log('Sign Up:', formData);
@@ -36,11 +36,11 @@ const LoginPage = ({ setIsLoggedIn }) => {
       .then(() =>{
         setIsLoggedIn(true);
         // navigate("/"); 
-      }).catch(error => {
-        console.log("couldn't send post request to backend");
+      }).catch(err => {
+        console.log("couldn't send post request to backend", err);
       })
     }
-    setIsLoading(false);
+    // setIsLoading(false);
   };
 
 

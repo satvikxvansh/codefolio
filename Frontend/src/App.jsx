@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import CodingProfileDashboard from './pages/Home';
-import LoginPage from './pages/LoginPage';
+import CodingProfileDashboard from './pages/Home.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import Layout from '@/components/layout.jsx';
+import { ThemeProvider } from "@/components/theme-provider"
 
 function App() {
   const [user, setUser] = useState(null);
@@ -26,23 +28,25 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn}/>} />
-          <Route path="/" element={<CodingProfileDashboard userData = {user}  />} />
-        </Routes>
-        {isLoading &&
-          <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-xs overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-            <div
-              className="relative p-8 bg-white w-full max-w-md m-auto rounded-xl shadow-2xl border border-gray-200"
-              onClick={(e) => e.stopPropagation()}
-            >Loading...</div>
-          </div>
-
-        }
-
-        {isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />}
-      </BrowserRouter>
+    {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme"> */}
+      <Layout>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn}/>} />
+            <Route path="/" element={<CodingProfileDashboard userData = {user}  />} />
+          </Routes>
+          {isLoading &&
+            <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-xs overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+              <div
+                className="relative p-8 bg-white w-full max-w-md m-auto rounded-xl shadow-2xl border border-gray-200"
+                onClick={(e) => e.stopPropagation()}
+              >Loading...</div>
+            </div>
+          }
+          {isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />}
+        </BrowserRouter>
+      </Layout>
+    {/* </ThemeProvider> */}
     </>
   );
 }
