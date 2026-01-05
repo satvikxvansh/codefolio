@@ -43,10 +43,10 @@ export function AppSidebar() {
   const { toggleSidebar } = useSidebar()
   return (
     <Sidebar collapsible="icon" variant="sidebar">
-      <SidebarHeader className="bg-[#09090b]">
+      <SidebarHeader className="bg-zinc-900">
         {/* Added profile here */}
       </SidebarHeader>
-      <SidebarContent className="bg-[#09090b] text-zinc-200">
+      <SidebarContent className="bg-zinc-900 text-zinc-200">
         <SidebarGroup>
           <SidebarGroupLabel className='text-zinc-500'>Application</SidebarGroupLabel>
           <SidebarGroupContent className="pl-2">
@@ -66,7 +66,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="bg-[#09090b] text-zinc-200">
+      <SidebarFooter className="bg-zinc-900 text-zinc-200">
         <SidebarMenu className="pl-2">
           <SidebarMenuItem>
             <SidebarMenuButton className="pl-3" onClick={toggleSidebar} asChild>
