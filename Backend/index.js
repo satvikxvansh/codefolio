@@ -1,7 +1,7 @@
 const express = require("express");
+const app = express();
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
-const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
@@ -9,6 +9,9 @@ const { connectDB, userModel, leetcodeModel, codeforcesModel } = require("./db")
 const PORT = 3000;
 require('dotenv').config()
 const JWT_SECRET = process.env.JWT_SECRET
+
+const codeforcesRoute = require("./routes/api-codeforces.js");
+const leetcodeRoute = require("./routes/api-leetcode.js");
 
 connectDB();
 
@@ -44,6 +47,10 @@ app.post('/signup', async (req, res) => {
       email: email
     }, JWT_SECRET);
     res.cookie('token', token)
+    res.json({
+      name: name,
+      email: email
+    })
     console.log("Cookie has been created")
   })
   res.status(201).json({ message: "Signup successful" }); //always send response status otherwise frontend api call will wait forevers
@@ -86,91 +93,15 @@ app.post('/logout', (req, res) => {
   res.status(200).json({ message: "Logged out" });
 });
 
-
-app.get('/api/codeforces', auth, async (req, res) => {
-  const { username } = req.query;
-  if (username === "" && !username) return res.status(400).json({ error: 'Username required' });
-
-  try {
-    const response = await fetch(`https://codeforces.com/api/user.info?handles=${username}`);
-    const data = await response.json();
-    if (data.status !== "OK") {
-      return res.status(404).json({ error: 'Codeforces user not found' })
-    }
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch data (Backend causing error)' });
-  }
-})
-
-app.use('/api/leetcode', auth, async (req, res) => {
-  const { username } = req.query;
-  if (!username) return res.status(400).json({ error: 'Username required' });
-
-  try {
-    const query = `
-  query getUserProfile($username: String!) {
-    allQuestionsCount {
-        difficulty
-        count
-      }
-    userContestRanking(username: $username) {
-    attendedContestsCount
-    rating
-    globalRanking
-    totalParticipants
-    topPercentage
-    badge {
-      name
-    }
-  }
-    matchedUser(username: $username) {
-      username
-      submitStats {
-        acSubmissionNum {
-          difficulty
-          count
-          submissions
-        }
-      }
-      profile {
-        ranking
-        userAvatar
-        realName
-        aboutMe
-        school
-        websites
-        countryName
-        company
-        jobTitle
-        skillTags
-        starRating
-        reputation
-        ranking
-      }
-    }
-  }
-`;
-    const response = await fetch('https://leetcode.com/graphql', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, variables: { username } }), //here we give the username
-    });
-
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch data (Backend causing error)' });
-  }
-})
+app.use('/api/codeforces', auth, codeforcesRoute);
+app.use('/api/leetcode', auth, leetcodeRoute);
 
 //add a auth middleware, if not verified, redirect to login page
 function auth(req, res, next) {
   const token = req.cookies.token;
 
   if (!token) {
+    console.log("auth middleware could not find token")
     return res.status(401).json({
       message: "No token found"
     });
@@ -179,9 +110,12 @@ function auth(req, res, next) {
   try {
     const decodedData = jwt.verify(token, JWT_SECRET);
     req.user = decodedData;
+    console.log("Authenicated");
     next();
   } catch (err) {
+    console.log("Invalid or expired token");
     return res.status(403).json({
+      loggedIn: false,
       message: "Invalid or expired token"
     });
   }

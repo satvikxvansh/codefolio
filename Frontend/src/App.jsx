@@ -1,49 +1,48 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import CodingProfileDashboard from './pages/Home';
+import { BrowserRouter, Route, Routes, Navigate, Outlet } from 'react-router-dom';
+import Home from './pages/Home';
 import LoginPage from './pages/LoginPage.jsx';
-import { ThemeProvider } from "@/components/theme-provider"
+import Dashboard from './pages/Dashboard.jsx';
+import Friends from './pages/Friends.jsx';
+import { useAuth } from "./components/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { login, isLoading } = useAuth();
 
   useEffect(() => {
-    setIsLoading(true);
+    isLoading(true);
     axios.get("http://localhost:3000/me", {
       withCredentials: true
-    }).then(res => {
-      setUser(res.data.user);
-      setIsLoggedIn(true);
-      console.log(user);
-    }).catch(() => {
-      setIsLoggedIn(false);
-    });
-    setIsLoading(false);
-  }, [isLoggedIn]);
+    })
+      .then(res => {
+        login(res.data.user);
+        // setIsLoggedIn(true);
+      })
+      .catch(() => {
+        console.log("Auth Failed from /me endpoint");
+        // setIsLoggedIn(false);
+      })
+      .finally(() => {
+        isLoading(false);
+      });
+  }, []);
 
   return (
     <>
-      {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme"> */}
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
-          <Route path="/" element={<CodingProfileDashboard userData={user} />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/*" element={<ProtectedRoute><Home /></ProtectedRoute>} >
+            <Route index element={<Dashboard />} />
+            <Route path="Dashboard" element={<Dashboard />} />
+            <Route path="Friends" element={<Friends />} />
+          </Route>
         </Routes>
-        {isLoading &&
-          <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-xs overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-            <div
-              className="relative p-8 bg-white w-full max-w-md m-auto rounded-xl shadow-2xl border border-gray-200"
-              onClick={(e) => e.stopPropagation()}
-            >Loading...</div>
-          </div>
-        }
-        {isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />}
+        <Outlet />
       </BrowserRouter>
-      {/* </ThemeProvider> */}
     </>
   );
 }

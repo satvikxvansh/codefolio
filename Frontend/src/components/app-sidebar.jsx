@@ -1,4 +1,5 @@
 import { UserSearch, Swords, Home, Search, Settings, PanelLeftIcon } from "lucide-react"
+import { NavLink } from 'react-router-dom';
 
 import {
   Sidebar,
@@ -19,21 +20,25 @@ import { SidebarProvider } from "./ui/sidebar"
 const items = [
   {
     title: "Dashboard",
+    route: "/Dashboard",
     url: "#",
     icon: Home,
   },
   {
     title: "Friends",
+    route: "/Friends",
     url: "#",
     icon: UserSearch,
   },
   {
     title: "Compare",
+    route: "/Compare",
     url: "#",
     icon: Swords,
   },
   {
     title: "Search",
+    route: "/Search",
     url: "#",
     icon: Search,
   },
@@ -54,10 +59,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton className="pl-4" asChild>
-                    <a href={item.url}>
+                    <NavLink to={item.route}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

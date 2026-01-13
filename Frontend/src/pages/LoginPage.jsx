@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from "../components/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const LoginPage = ({ setIsLoggedIn }) => {
+const LoginPage = () => {
+  const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from || "/";
+
   const [isSignUp, setIsSignUp] = useState(true);
-  // const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,23 +26,24 @@ const LoginPage = ({ setIsLoggedIn }) => {
   };
 
   const handleSubmit = async (e) => {
-    // setIsLoading(true);
     e.preventDefault();
+    isLoading(true);
     if (isSignUp) {
-      console.log('Sign Up:', formData);
       await axios.post("http://localhost:3000/signup", formData, { withCredentials: true })
-      .then(() =>{
-        setIsLoggedIn(true);
-        // navigate("/"); 
+      .then(res =>{
+        login(res.data);
+        isLoading(false);
+        navigate(from, { replace: true });
       }).catch((err) => {
         console.log("couldn't send post request to backend", err);
       })
     } else {
-      console.log('Sign In:', formData);
+      // console.log('Sign In:', formData);
       await axios.post("http://localhost:3000/signin", formData, { withCredentials: true })
-      .then(() =>{
-        setIsLoggedIn(true);
-        // navigate("/"); 
+      .then(res =>{
+        login(res.data);
+        isLoading(false);
+        navigate(from, { replace: true });
       }).catch(err => {
         console.log("couldn't send post request to backend", err);
       })
