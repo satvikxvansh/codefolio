@@ -13,8 +13,7 @@ import {
   Check,
   UserMinus
 } from 'lucide-react';
-import { useAuth } from "../components/AuthContext";
-
+import { useAuth } from "../components/Contexts/AuthContext";
 
 const FriendsPage = () => {
   const {user, logout} = useAuth();

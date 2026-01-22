@@ -5,8 +5,9 @@ import { BrowserRouter, Route, Routes, Navigate, Outlet } from 'react-router-dom
 import Home from './pages/Home';
 import LoginPage from './pages/LoginPage.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Compare from './pages/Compare.jsx';
 import Friends from './pages/Friends.jsx';
-import { useAuth } from "./components/AuthContext";
+import { useAuth } from "./components/Contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="Dashboard" element={<Dashboard />} />
             <Route path="Friends" element={<Friends />} />
+            <Route path="Compare" element={<Compare />} />
           </Route>
         </Routes>
         <Outlet />

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { CircleArrowUp, TrendingUp, ExternalLink, Award, Target, Calendar, Activity } from 'lucide-react';
 import UsernameModal from '../components/UsernameModal';
-import { useAuth } from "../components/AuthContext";
+import { useAuth } from "../components/Contexts/AuthContext";
 
 const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   const {user} = useAuth();
@@ -49,7 +49,6 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   //   axios.get(`http://localhost:3000/api/leetcode/upcomingContests`, {
   //     withCredentials: true
   //   }).then(res => {
-  //     // setLeetcodeData(res.data.data.matchedUser)
   //     console.log(res.data);
   //   })
   //     .catch(console.error);
