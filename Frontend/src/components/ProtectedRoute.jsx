@@ -1,16 +1,22 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./Contexts/AuthContext";
+import { Spinner } from "@/components/ui/spinner"
 
 function ProtectedRoute({ children }) {
   const location = useLocation();
-  const {user, loading} = useAuth();
+  const { user, loading } = useAuth();
 
-  if(loading) {
+  if (loading) {
     return (
-      <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-xs overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-        <div className="relative p-8 bg-white w-full max-w-md m-auto rounded-xl shadow-2xl border border-gray-200">Loading...</div>
-      </div>
-    )
+      <>
+        <div className="fixed top-0 h-screen w-full bg-gray-950/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="flex flex-row bg-gray-800 rounded-full px-3 py-1 gap-2 items-center text-gray-300">
+            <Spinner data-icon="inline-start" />
+            Authenticating
+          </div>
+        </div>
+      </>
+  )
   }
 
   if (!user) {

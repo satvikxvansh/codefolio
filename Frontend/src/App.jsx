@@ -27,7 +27,9 @@ function App() {
         // setIsLoggedIn(false);
       })
       .finally(() => {
-        isLoading(false);
+        setTimeout(()=>{
+          isLoading(false);
+        },1000);
       });
   }, []);
 
