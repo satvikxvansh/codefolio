@@ -42,6 +42,7 @@ const LoginPage = () => {
       await axios.post("http://localhost:3000/signin", formData, { withCredentials: true })
       .then(res =>{
         login(res.data);
+        console.log(res.data);
         isLoading(false);
         navigate(from, { replace: true });
       }).catch(err => {

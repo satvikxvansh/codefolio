@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const UsernameModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   // 1. Internal state for form inputs
@@ -10,7 +11,7 @@ const UsernameModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-        setFormData({ leetcode: '', codeforces: '' });
+      setFormData({ leetcode: '', codeforces: '' });
     }
   }, [isOpen]);
 
@@ -24,10 +25,15 @@ const UsernameModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Pass data back to parent component
+    await axios.post("http://localhost:3000/platformdetails",
+      formData, { 
+      withCredentials: true 
+    });
     onSubmit(formData);
+
   };
 
   // If isOpen is false, don't render anything in the DOM

@@ -10,13 +10,30 @@ import { useLoader } from '@/components/Contexts/loaderContext';
 const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   const { user } = useAuth();
   const { isSync } = useLoader();
-
-  // const [contest, setContest] = useState({rating: codeforcesData?.result?.at(0)?.rating, max: codeforcesData?.result?.at(0)?.maxRating})
   const [formData, setFormData] = useState(null);
   const [showModal, setShowModal] = useState(false)
-  const [LeetcodeData, setLeetcodeData] = useState({});
   const [codeforcesData, setCodeforcesData] = useState({});
+  const [LeetcodeData, setLeetcodeData] = useState({});
+  
 
+  useEffect(() => {
+      if(user?.leetcode && user?.codeforces) setFormData({leetcode: user?.leetcode, codeforces: user?.codeforces});
+      console.log("user", user);
+      console.log("formData", formData);
+  }, [])
+
+  const ratingInfo = [
+    {
+      "rating": (LeetcodeData?.userContestRanking?.rating ?? 0),
+      "maxRating": (LeetcodeData?.userContestRanking?.rating ?? 0)
+    },
+    {
+      "rating": (codeforcesData?.result?.[0]?.rating ?? 0),
+      "maxRating": (codeforcesData?.result?.[0]?.maxRating ?? 0)
+    }
+
+  ]
+  const [contestInfo, setContestInfo] = useState(ratingInfo?.[0]);
 
   const closeModal = () => {
     setShowModal(false);
@@ -46,16 +63,15 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
       axios.get(`http://localhost:3000/api/leetcode/userData?username=${formData.leetcode}`, {
         withCredentials: true
       }).then(res => {
-        setLeetcodeData(res.data.data.matchedUser)
-        console.log(res.data);
+        setLeetcodeData(res.data.data)
+        console.log(res.data.data);
       })
         .catch(console.error);
-        // setLoading(false);
-        setTimeout(()=>{
-          isSync(false);
-        },2000);
+      // setLoading(false);
+      setTimeout(() => {
+        isSync(false);
+      }, 2000);
     }
-
   }, [formData]);
 
   // useEffect(() => {
@@ -132,7 +148,8 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
                     <ExternalLink size={16} />
                   </div>
                 </div>
-                <p className="text-8xl font-roboto font-semibold flex justify-center">{LeetcodeData?.submitStats?.acSubmissionNum[0]?.count + codeforcesData?.problemSolved}
+                <p className="text-8xl font-roboto font-semibold flex justify-center">{(LeetcodeData?.matchedUser?.submitStats?.acSubmissionNum[0]?.count || 0)
+                  + (codeforcesData?.problemSolved || 0)}
                 </p>
                 <div className="flex items-center justify-center gap-1 text-sm opacity-90">
                   <TrendingUp size={14} />
@@ -185,17 +202,17 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
                   </div>
                 </div>
                 <div className="text-6xl font-roboto font-semibold text-zinc-200 my-4">
-                  <h2>1500</h2>
-                  <p className='text-xl'>(max. 1550)</p>
+                  <h2>{parseInt(contestInfo?.rating)}</h2>
+                  <p className='text-xl'>(max. {(parseInt(contestInfo?.maxRating) || 0)})</p>
                 </div>
                 <div className='text-base'>
                   <div className='flex justify-between'>
-                    <button className='text-zinc-300 cursor-pointer hover:bg-gray-50/10'>Leetcode</button>
-                    <p className='text-gray-400'>Attended</p>
+                    <button onClick={()=>setContestInfo(ratingInfo?.[0])} className='text-zinc-300 cursor-pointer hover:bg-gray-50/10'>Leetcode</button>
+                    <p className='text-gray-400'>{LeetcodeData?.userContestRanking?.attendedContestsCount} Attended</p>
                   </div>
-                  <div className='flex justify-between'>
+                  <div onClick={()=>setContestInfo(ratingInfo?.[1])} className='flex justify-between'>
                     <button className='text-zinc-300 cursor-pointer hover:bg-gray-50/10'>Codeforces</button>
-                    <p className='text-gray-400'>Attended</p>
+                    <p className='text-gray-400'>{codeforcesData?.contestsAttended} Attended</p>
                   </div>
                 </div>
               </div>
@@ -208,26 +225,26 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
               <div className="bg-zinc-900 rounded-xl px-6 py-4 shadow-sm border border-zinc-700 flex flex-col justify-between">
 
                 <div id="head" className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium text-gray-600">Leetcode</h3>
+                  <h3 className="text-base font-medium text-gray-600">Leetcode Problems</h3>
                   <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                     <ExternalLink size={16} className="text-orange-600" />
                   </div>
                 </div>
 
-                <p className="text-6xl font-roboto font-semibold text-zinc-200 my-4">{LeetcodeData?.submitStats?.acSubmissionNum[0]?.count}</p>
+                <p className="text-6xl font-roboto font-semibold text-zinc-200 my-4">{LeetcodeData?.matchedUser?.submitStats?.acSubmissionNum[0]?.count}</p>
 
                 <div className='text-base'>
                   <div className='flex justify-between bg-[#264545] px-2 py-1 rounded-md'>
                     <p className='text-[#1cbaba] font-semibold'>Easy</p>
-                    <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[1]?.count}</p>
+                    <p className='text-white font-bold'>{LeetcodeData?.matchedUser?.submitStats?.acSubmissionNum[1]?.count}</p>
                   </div>
                   <div className='my-2 flex justify-between bg-[#534520] px-2 py-1 rounded-md'>
                     <p className='text-[#ffb700] font-semibold'>Medium</p>
-                    <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[2]?.count}</p>
+                    <p className='text-white font-bold'>{LeetcodeData?.matchedUser?.submitStats?.acSubmissionNum[2]?.count}</p>
                   </div>
                   <div className='mt-2 flex justify-between bg-[#512b2b] px-2 py-1 rounded-md'>
                     <p className='text-[#f63737] font-semibold'>Hard</p>
-                    <p className='text-white font-bold'>{LeetcodeData?.submitStats?.acSubmissionNum[3]?.count}</p>
+                    <p className='text-white font-bold'>{LeetcodeData?.matchedUser?.submitStats?.acSubmissionNum[3]?.count}</p>
                   </div>
                 </div>
 
@@ -237,26 +254,25 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
               {/* Codeforces Rating */}
               <div className="bg-zinc-900 rounded-xl px-6 py-4 shadow-sm border border-zinc-700 flex flex-col justify-between">
                 <div id="head" className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium text-gray-600">Codeforces</h3>
+                  <h3 className="text-base font-medium text-gray-600">Codeforces Problems</h3>
                   <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                     <ExternalLink size={16} className="text-orange-600" />
                   </div>
                 </div>
 
                 <p className="text-6xl font-roboto font-semibold text-zinc-200 mb-5">{codeforcesData?.problemSolved}</p>
-
                 <div className='text-base'>
                   <div className='flex justify-between'>
                     <p className='text-zinc-300 '>Title</p>
-                    <p className='text-white'>{codeforcesData.result?.at(0)?.rank}</p>
+                    <p className='text-gray-500 font-bold'>{codeforcesData.result?.at(0)?.rank}</p>
+                  </div>
+                  <div className='flex justify-between'>
+                    <p className='text-zinc-300 '>Rating</p>
+                    <p className='text-white'>{codeforcesData?.result?.at(0)?.rating}</p>
                   </div>
                   <div className='flex justify-between'>
                     <p className='text-zinc-300 '>Max. Rating</p>
                     <p className='text-white'>{codeforcesData?.result?.at(0)?.maxRating}</p>
-                  </div>
-                  <div className='flex justify-between'>
-                    <p className='text-zinc-300 '>Problems Solved</p>
-                    <p className='text-white'>api.call</p>
                   </div>
                   <div className='flex justify-between'>
                     <p className='text-zinc-300 '>Contributions</p>

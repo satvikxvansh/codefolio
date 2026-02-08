@@ -23,6 +23,19 @@ const problemSolved = async (username) => {
     console.log("Status = FAILED")
   }
 }
+const contestsAttended = async (username) => {
+  const temp = await axios(`https://codeforces.com/api/user.rating?handle=${username}`
+  ).then(res => {
+    return res.data;
+  }).catch(err => {
+    console.log("api-codeforces status=\"FAILED\"", err);
+  })
+  if (temp && temp.status == "OK") {
+    return Object.keys(temp.result).length;
+  } else {
+    console.log("Status = FAILED")
+  }
+}
 
 router.get("/", async (req, res) => {
   const { username } = req.query;
@@ -31,8 +44,10 @@ router.get("/", async (req, res) => {
   try {
     const response = await fetch(`https://codeforces.com/api/user.info?handles=${username}`)
     const problems = await problemSolved(`${username}`);
+    const contests = await contestsAttended(`${username}`);
     const data = await response.json();
     data.problemSolved = problems;
+    data.contestsAttended = contests;
     if (data.status !== "OK") {
       return res.status(404).json({ error: 'Codeforces user not found' })
     }

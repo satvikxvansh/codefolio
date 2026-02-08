@@ -5,10 +5,10 @@ const cookieParser = require('cookie-parser');
 const cors = require("cors");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const { connectDB, userModel, leetcodeModel, codeforcesModel } = require("./db");
+const { connectDB, userModel, profileModel } = require("./db");
 const PORT = 3000;
-require('dotenv').config()
-const JWT_SECRET = process.env.JWT_SECRET
+require('dotenv').config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const codeforcesRoute = require("./routes/api-codeforces.js");
 const leetcodeRoute = require("./routes/api-leetcode.js");
@@ -40,11 +40,12 @@ app.post('/signup', async (req, res) => {
     name: name,
     email: email,
     password: password
-  }).then(() => {
-    console.log("Data created")
+  }).then( user => {
+    console.log("User data created, name: ",user.name)
     const token = jwt.sign({
-      name: name,
-      email: email
+      name: user.name,
+      email: user.email,
+      userId: user._id
     }, JWT_SECRET);
     res.cookie('token', token)
     res.json({
@@ -60,20 +61,32 @@ app.post('/signup', async (req, res) => {
 app.post('/signin', async (req, res) => {
   const email = req.body.email
   const password = req.body.password
-
   const user = await userModel.findOne({ email: email });
+  
+  const userId = user._id;
+  const profile = await profileModel.findOne({ userId }).populate("userId");
+
+  const personalInfo = {
+    name: user?.name,
+    email: user?.email,
+    leetcode: profile?.leetcode,
+    codeforces: profile?.codeforces
+  }
   if (user) {
     const hashPassword = user.password;
     const result = await bcrypt.compare(password, hashPassword);
-    console.log(result);
+    // console.log(result);
     console.log("password", password);
     console.log("hash password", hashPassword);
     if(result){
       const token = jwt.sign({
         name: user.name,
-        email: email
+        email: email,
+        userId: user._id
       }, JWT_SECRET);
       res.cookie('token', token)
+      res.json(personalInfo);  //sending platform IDs as a response
+      console.log(personalInfo);
       console.log("Cookie has been created")
       res.status(201).json({ message: "Signin successful" }); //always send response status otherwise frontend api call will keep waiting forever
     } else {
@@ -93,6 +106,24 @@ app.post('/logout', (req, res) => {
   res.status(200).json({ message: "Logged out" });
 });
 
+app.post('/platformdetails', auth, async (req, res) => {
+  const leetcode = req.body.leetcode
+  const codeforces = req.body.codeforces
+
+  // console.log(leetcode, codeforces, req.user.userId)
+
+  await profileModel.create({
+    userId: req.user.userId,
+    leetcode: leetcode,
+    codeforces: codeforces
+  }).then(()=>{
+    console.log("platform details added");
+    res.status(201).json({message: "platform details successfully added to the database"});
+  }).catch(err =>{
+    console.log(err);
+  })
+})
+
 app.use('/api/codeforces', auth, codeforcesRoute);
 app.use('/api/leetcode', auth, leetcodeRoute);
 
@@ -106,7 +137,7 @@ function auth(req, res, next) {
       message: "No token found"
     });
   }
-
+  // console.log("JWT token: ", token)
   try {
     const decodedData = jwt.verify(token, JWT_SECRET);
     req.user = decodedData;
