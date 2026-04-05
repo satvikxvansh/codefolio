@@ -18,8 +18,8 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
 
   useEffect(() => {
       if(user?.leetcode && user?.codeforces) setFormData({leetcode: user?.leetcode, codeforces: user?.codeforces});
-      console.log("user", user);
-      console.log("formData", formData);
+      // console.log("user", user);
+      // console.log("formData", formData);
   }, [])
 
   const ratingInfo = [
