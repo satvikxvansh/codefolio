@@ -115,7 +115,7 @@ const LoginPage = () => {
         .then(res => {
           login(res.data);
           isLoading(false);
-          navigate(from, { replace: true });
+          navigate("/user/Dashboard");
         }).catch((err) => {
           console.log("couldn't send post request to backend", err);
         })
@@ -126,7 +126,7 @@ const LoginPage = () => {
           login(res.data);
           console.log(res.data);
           isLoading(false);
-          navigate(from, { replace: true });
+          navigate("/user/Dashboard");
         }).catch(err => {
           console.log("couldn't send post request to backend", err);
         })

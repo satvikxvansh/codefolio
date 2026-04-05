@@ -20,25 +20,25 @@ import { SidebarProvider } from "./ui/sidebar"
 const items = [
   {
     title: "Dashboard",
-    route: "/Dashboard",
+    route: "/user/Dashboard",
     url: "#",
     icon: Home,
   },
   {
     title: "Friends",
-    route: "/Friends",
+    route: "/user/Friends",
     url: "#",
     icon: UserSearch,
   },
   {
     title: "Compare",
-    route: "/Compare",
+    route: "/user/Compare",
     url: "#",
     icon: Swords,
   },
   {
     title: "Search",
-    route: "/Search",
+    route: "/user/Search",
     url: "#",
     icon: Search,
   },

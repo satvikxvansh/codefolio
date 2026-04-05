@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState} from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 import { CircleArrowUp, TrendingUp, ExternalLink, Award, Target, Calendar, Activity, CirclePlus } from 'lucide-react';
 import UsernameModal from '../components/UsernameModal';
@@ -14,6 +15,7 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   const [showModal, setShowModal] = useState(false)
   const [codeforcesData, setCodeforcesData] = useState({});
   const [LeetcodeData, setLeetcodeData] = useState({});
+  const navigate = useNavigate();
   
 
   useEffect(() => {
@@ -54,6 +56,7 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
     }).catch(error => {
       console.log(error);
     })
+    navigate("/login");
   }
 
   // API calls
