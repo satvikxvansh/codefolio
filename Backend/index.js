@@ -58,6 +58,11 @@ app.post('/signup', async (req, res) => {
   // res.json({message: "you are signed in"})
 })
 
+app.get('/check', (req, res) => {
+  console.log("This prints to the server terminal");
+  res.send("Hello World");
+});
+
 app.post('/signin', async (req, res) => {
   const email = req.body.email
   const password = req.body.password
