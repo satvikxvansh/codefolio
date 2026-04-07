@@ -17,7 +17,7 @@ connectDB();
 
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://codefolio-by-satvik.vercel.app',
   credentials: true
 }));
 app.use(express.json());
