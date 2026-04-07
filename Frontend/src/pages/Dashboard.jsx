@@ -7,6 +7,8 @@ import { useAuth } from "../components/Contexts/AuthContext";
 import { Spinner } from '../components/ui/spinner';
 import { useLoader } from '@/components/Contexts/loaderContext';
 
+const BACKEND_URL = import.meta.env.VITE_API_KEY;
+
 
 const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   const { user } = useAuth();
@@ -48,7 +50,7 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   }
 
   const logout = async () => {
-    await axios.post("http://localhost:3000/logout", {}, {
+    await axios.post(`${BACKEND_URL}/logout`, {}, {
       withCredentials: true
     }).then(() => {
       console.log("logged out")
@@ -63,7 +65,7 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   useEffect(() => {
     if (formData?.leetcode) {
       isSync(true);
-      axios.get(`http://localhost:3000/api/leetcode/userData?username=${formData.leetcode}`, {
+      axios.get(`${BACKEND_URL}/api/leetcode/userData?username=${formData.leetcode}`, {
         withCredentials: true
       }).then(res => {
         setLeetcodeData(res.data.data)
@@ -78,7 +80,7 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   }, [formData]);
 
   // useEffect(() => {
-  //   axios.get(`http://localhost:3000/api/leetcode/upcomingContests`, {
+  //   axios.get(`BACKEND_URL/api/leetcode/upcomingContests`, {
   //     withCredentials: true
   //   }).then(res => {
   //     console.log(res.data);
@@ -88,7 +90,7 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
 
   useEffect(() => {
     if (formData?.codeforces) {
-      axios.get(`http://localhost:3000/api/codeforces?username=${formData.codeforces}`, {
+      axios.get(`${BACKEND_URL}/api/codeforces?username=${formData.codeforces}`, {
         withCredentials: true
       }).then(res => {
         setCodeforcesData(res.data)

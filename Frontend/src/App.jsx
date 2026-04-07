@@ -11,12 +11,14 @@ import LandingPage from './pages/LandingPage.jsx';
 import { useAuth } from "./components/Contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+const BACKEND_URL = import.meta.env.VITE_API_KEY;
+
 function App() {
   const { login, isLoading } = useAuth();
 
   useEffect(() => {
     isLoading(true);
-    axios.get("http://localhost:3000/me", {
+    axios.get(`${BACKEND_URL}/me`, {
       withCredentials: true
     })
       .then(res => {

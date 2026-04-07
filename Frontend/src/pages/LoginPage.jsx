@@ -11,6 +11,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Particles from "../components/Particles.jsx"
 import GridBg from "../components/GridBg.jsx"
 
+const BACKEND_URL = import.meta.env.VITE_API_KEY;
+
 const STATS = [
   { label: "Problems Solved", value: "600+", icon: Code2, color: "#10b981" },
   { label: "Current Streak", value: "23d", icon: Flame, color: "#f59e0b" },
@@ -111,7 +113,7 @@ const LoginPage = () => {
     e.preventDefault();
     isLoading(true);
     if (isSignUp) {
-      await axios.post("http://localhost:3000/signup", formData, { withCredentials: true })
+      await axios.post(`${BACKEND_URL}/signup`, formData, { withCredentials: true })
         .then(res => {
           login(res.data);
           isLoading(false);
@@ -121,7 +123,7 @@ const LoginPage = () => {
         })
     } else {
       // console.log('Sign In:', formData);
-      await axios.post("http://localhost:3000/signin", formData, { withCredentials: true })
+      await axios.post(`${BACKEND_URL}/signin`, formData, { withCredentials: true })
         .then(res => {
           login(res.data);
           console.log(res.data);

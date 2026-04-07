@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const BACKEND_URL = import.meta.env.VITE_API_KEY;
+
 const UsernameModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   // 1. Internal state for form inputs
   const [formData, setFormData] = useState({
