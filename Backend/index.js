@@ -40,14 +40,18 @@ app.post('/signup', async (req, res) => {
     name: name,
     email: email,
     password: password
-  }).then( user => {
-    console.log("User data created, name: ",user.name)
+  }).then(user => {
+    console.log("User data created, name: ", user.name)
     const token = jwt.sign({
       name: user.name,
       email: user.email,
       userId: user._id
     }, JWT_SECRET);
-    res.cookie('token', token)
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"
+    })
     res.json({
       name: name,
       email: email
@@ -67,7 +71,7 @@ app.post('/signin', async (req, res) => {
   const email = req.body.email
   const password = req.body.password
   const user = await userModel.findOne({ email: email });
-  
+
   const userId = user._id;
   const profile = await profileModel.findOne({ userId }).populate("userId");
 
@@ -83,13 +87,17 @@ app.post('/signin', async (req, res) => {
     // console.log(result);
     console.log("password", password);
     console.log("hash password", hashPassword);
-    if(result){
+    if (result) {
       const token = jwt.sign({
         name: user.name,
         email: email,
         userId: user._id
       }, JWT_SECRET);
-      res.cookie('token', token)
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none"
+      })
       res.json(personalInfo);  //sending platform IDs as a response
       console.log(personalInfo);
       console.log("Cookie has been created")
@@ -121,16 +129,17 @@ app.post('/platformdetails', auth, async (req, res) => {
     userId: req.user.userId,
     leetcode: leetcode,
     codeforces: codeforces
-  }).then(()=>{
+  }).then(() => {
     console.log("platform details added");
-    res.status(201).json({message: "platform details successfully added to the database"});
-  }).catch(err =>{
+    res.status(201).json({ message: "platform details successfully added to the database" });
+  }).catch(err => {
     console.log(err);
   })
 })
 
 app.use('/api/codeforces', auth, codeforcesRoute);
 app.use('/api/leetcode', auth, leetcodeRoute);
+
 
 //add a auth middleware, if not verified, redirect to login page
 function auth(req, res, next) {
