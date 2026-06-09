@@ -63,7 +63,7 @@ function calendarToWeeks(calendar) {
   return weeks;
 }
 
-export default function GitHubHeatmap({ cfHandle="satvikxvansh", lcUsername="satvikxvansh" }) {
+export default function GitHubHeatmap({ cfHandle, lcUsername }) {
   const [weeks, setWeeks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

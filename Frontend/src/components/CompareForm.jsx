@@ -111,7 +111,7 @@ const CompareForm = () => {
         </div>
 
         {/* Quick Compare with Friends */}
-        <div className="mb-8">
+        {/* <div className="mb-8">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Users className="text-emerald-400" size={20} />
             Quick Compare with Friends
@@ -147,7 +147,7 @@ const CompareForm = () => {
               </button>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Comparison Form */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">

@@ -3,6 +3,8 @@ const router = express.Router();
 const axios = require('axios');
 router.use(express.json());
 
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const problemSolved = async (username) => {
   const temp = await axios(`https://codeforces.com/api/user.status?handle=${username}`
   ).then(res => {
@@ -43,7 +45,9 @@ router.get("/", async (req, res) => {
 
   try {
     const response = await fetch(`https://codeforces.com/api/user.info?handles=${username}`)
+    await delay(1000);
     const problems = await problemSolved(`${username}`);
+    await delay(1000);
     const contests = await contestsAttended(`${username}`);
     const data = await response.json();
     data.problemSolved = problems;

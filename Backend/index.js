@@ -1,8 +1,8 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
-const cors = require("cors");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const { connectDB, userModel, profileModel } = require("./db");
@@ -12,18 +12,22 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const codeforcesRoute = require("./routes/api-codeforces.js");
 const leetcodeRoute = require("./routes/api-leetcode.js");
-const heatmapRouter = require("./routes/heatmap");
+const heatmapRouter = require("./routes/Heatmap");
+const compareRouter = require("./routes/Compare.js");
 
 connectDB();
 
-app.use(cookieParser());
-
 app.use(cors({
-  origin: ['https://getcodefolio.vercel.app',
-  'http://localhost:5173'],
+  origin: process.env.  CLIENT_ORIGIN,
   credentials: true
 }));
+
 app.use(express.json());
+app.use(cookieParser());
+
+app.get('/', (req, res) => {
+  res.send("I am working fine dude");
+});
 
 app.get('/me', auth, (req, res) => {
   res.json({
@@ -141,6 +145,7 @@ app.post('/platformdetails', auth, async (req, res) => {
 app.use('/api/codeforces', auth, codeforcesRoute);
 app.use('/api/leetcode', auth, leetcodeRoute);
 app.use("/api/heatmap", heatmapRouter);
+app.use("/api/compare", compareRouter);
 
 
 //add a auth middleware, if not verified, redirect to login page

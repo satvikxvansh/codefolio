@@ -39,11 +39,11 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
   ]
   const [contestInfo, setContestInfo] = useState({});
 
-useEffect(() => {
-  if (ratingInfo?.[0]?.rating && !contestInfo?.rating) {
-    setContestInfo(ratingInfo[0]);
-  }
-}, [ratingInfo]);
+  useEffect(() => {
+    if (ratingInfo?.[0]?.rating && !contestInfo?.rating) {
+      setContestInfo(ratingInfo[0]);
+    }
+  }, [ratingInfo]);
 
   const closeModal = () => {
     setShowModal(false);
@@ -84,15 +84,6 @@ useEffect(() => {
       }, 2000);
     }
   }, [formData]);
-
-  // useEffect(() => {
-  //   axios.get(`BACKEND_URL/api/leetcode/upcomingContests`, {
-  //     withCredentials: true
-  //   }).then(res => {
-  //     console.log(res.data);
-  //   })
-  //     .catch(console.error);
-  // }, []);
 
   useEffect(() => {
     if (formData?.codeforces) {
@@ -294,7 +285,7 @@ useEffect(() => {
               </div>
 
               <div className="bg-zinc-900 rounded-2xl shadow-sm col-span-2">
-                <GitHubHeatmap cfHandle="satvikxvansh" lcUsername="satvikxvansh" />
+                <GitHubHeatmap cfHandle="satvikxvansh" lcUsername="goyal_additya" />
               </div>
             </div>
 
