@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+require('dotenv').config();
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId; 
-require('dotenv').config();
-const MONGODB_URI = process.env.MONGODB_URL;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const connectDB = async () => {
     await mongoose.connect(MONGODB_URI)

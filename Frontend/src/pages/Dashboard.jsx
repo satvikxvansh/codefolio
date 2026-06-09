@@ -1,12 +1,12 @@
 import React, { useEffect, useState} from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
-import { CircleArrowUp, TrendingUp, ExternalLink, Award, Target, Calendar, Activity, CirclePlus } from 'lucide-react';
+import { ArrowUp , TrendingUp, ExternalLink, Award, Target, Calendar, Activity, CirclePlus } from 'lucide-react';
 import UsernameModal from '../components/UsernameModal';
 import { useAuth } from "../components/Contexts/AuthContext";
 import { Spinner } from '../components/ui/spinner';
 import { useLoader } from '@/components/Contexts/loaderContext';
-
+import GitHubHeatmap from "../components/GitHubHeatmap";
 const BACKEND_URL = import.meta.env.VITE_API_KEY;
 
 
@@ -37,7 +37,13 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
     }
 
   ]
-  const [contestInfo, setContestInfo] = useState(ratingInfo?.[0]);
+  const [contestInfo, setContestInfo] = useState({});
+
+useEffect(() => {
+  if (ratingInfo?.[0]?.rating && !contestInfo?.rating) {
+    setContestInfo(ratingInfo[0]);
+  }
+}, [ratingInfo]);
 
   const closeModal = () => {
     setShowModal(false);
@@ -171,8 +177,9 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
                   </div>
                 </div>
                 <p className="text-8xl font-roboto font-semibold flex justify-center text-zinc-200">#2</p>
-                <div className="text-lime-300 font-bold flex justify-center items-center gap-1 text-lg opacity-90">
-                  <CircleArrowUp size={18} />54
+                <div className="text-green-400 flex justify-center items-center gap-1 text-xs font-bold rounded-full py-1">
+                  <ArrowUp size={15}/> 
+                  <p>RANK GAIN: 54 POSITIONS</p>
                 </div>
               </div>
 
@@ -207,7 +214,7 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
                   </div>
                 </div>
                 <div className="text-6xl font-roboto font-semibold text-zinc-200 my-4">
-                  <h2>{parseInt(contestInfo?.rating)}</h2>
+                  <h2>{parseInt(contestInfo?.rating || 0)}</h2>
                   <p className='text-xl'>(max. {(parseInt(contestInfo?.maxRating) || 0)})</p>
                 </div>
                 <div className='text-base'>
@@ -286,8 +293,8 @@ const CodingProfileDashboard = ({ setIsLoggedIn }) => {
                 </div>
               </div>
 
-              <div className="bg-zinc-900 flex justify-center items-center rounded-xl p-6 shadow-sm border border-zinc-700 col-span-2">
-                <h3 className="text-sm font-medium text-gray-400">Heatmap coming soon...</h3>
+              <div className="bg-zinc-900 rounded-2xl shadow-sm col-span-2">
+                <GitHubHeatmap cfHandle="satvikxvansh" lcUsername="satvikxvansh" />
               </div>
             </div>
 

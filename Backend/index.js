@@ -12,17 +12,18 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const codeforcesRoute = require("./routes/api-codeforces.js");
 const leetcodeRoute = require("./routes/api-leetcode.js");
+const heatmapRouter = require("./routes/heatmap");
 
 connectDB();
 
 app.use(cookieParser());
+
 app.use(cors({
-  origin: 'https://getcodefolio.vercel.app',
+  origin: ['https://getcodefolio.vercel.app',
+  'http://localhost:5173'],
   credentials: true
 }));
 app.use(express.json());
-
-//you cannot parse a 'body' unless you are using the express.json() middleware
 
 app.get('/me', auth, (req, res) => {
   res.json({
@@ -139,6 +140,7 @@ app.post('/platformdetails', auth, async (req, res) => {
 
 app.use('/api/codeforces', auth, codeforcesRoute);
 app.use('/api/leetcode', auth, leetcodeRoute);
+app.use("/api/heatmap", heatmapRouter);
 
 
 //add a auth middleware, if not verified, redirect to login page
