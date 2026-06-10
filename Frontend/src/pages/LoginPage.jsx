@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { motion, useInView, useAnimation, AnimatePresence } from "framer-motion";
 import {
-  Code2, Trophy, Users, TrendingUp, Zap, ChevronRight,
+  ChevronLeft, Code2, Trophy, Users, TrendingUp, Zap, ChevronRight,
   Star, GitBranch, BarChart2, Globe, Shield, ArrowRight,
   Terminal, Flame, Target, Activity, Menu, X, ExternalLink
 } from "lucide-react";
@@ -162,8 +162,8 @@ const LoginPage = () => {
             transition={{ duration: 0.5 }}
             className="relative flex items-center gap-2 z-10"
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
-              <Code2 size={15} className="text-black" strokeWidth={3} />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+              <img src="/logo.png" alt="Logo" />
             </div>
             <span className="text-white font-bold text-lg font-mono tracking-tight">Codefolio</span>
           </motion.div>

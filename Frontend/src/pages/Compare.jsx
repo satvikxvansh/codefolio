@@ -584,24 +584,24 @@ export default function Compare({ setIsLoggedIn }) {
       <header className="bg-zinc-900 border-gray-200 px-5 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-emerald-900 rounded-full flex items-center justify-center">
-              <span className="text-emerald-100 font-bold text-xl">{'<>'}</span>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center">
+              <img src="/logo.png" alt="Logo" />
             </div>
             <h1 className="text-2xl font-bold font-grotesk text-zinc-200">Codefolio</h1>
           </div>
           <div className="flex items-center gap-4">
+            <button className="cursor-pointer px-4 py-2 bg-emerald-600 text-gray-100 rounded-lg hover:bg-gray-100 hover:text-emerald-600 transition-colors font-medium" onClick={() => setShowModal(true)}>
+              Sync Data
+            </button>
             <div className="flex items-center gap-3">
               <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                src={user?.pictureURL || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"}
                 alt="Profile"
                 className="w-10 h-10 rounded-full"
               />
               <div>
-                <p className="font-semibold text-gray-800">{user?.name}</p>
+                <p className="font-semibold text-gray-200">{user?.name}</p>
                 <p className="text-sm text-gray-500">{user?.email}</p>
-              </div>
-              <div>
-                <button className="cursor-pointer px-4 py-2 bg-white text-red-400 rounded-lg hover:bg-red-400 hover:text-white transition-colors font-medium" onClick={logout}>Logout</button>
               </div>
             </div>
           </div>

@@ -6,14 +6,19 @@ const cookieParser = require('cookie-parser');
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const { connectDB, userModel, profileModel } = require("./db");
+const LeetcodeData = require("./models/LeetcodeData.js");
+const CodeforcesData = require("./models/CodeforcesData.js");
 const PORT = 3000;
 require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET;
+
 
 const codeforcesRoute = require("./routes/api-codeforces.js");
 const leetcodeRoute = require("./routes/api-leetcode.js");
 const heatmapRouter = require("./routes/Heatmap");
 const compareRouter = require("./routes/Compare.js");
+const upcomingContestsRouter = require("./routes/upcomingContests.js");
+
 
 connectDB();
 
@@ -29,10 +34,21 @@ app.get('/', (req, res) => {
   res.send("I am working fine dude");
 });
 
-app.get('/me', auth, (req, res) => {
+app.get('/me', auth, async (req, res) => {
+  const userId = req.user.userId;
+  const user = await userModel.findById(userId);
+  const profile = await profileModel.findOne({ userId });
+
   res.json({
     loggedIn: true,
-    user: req.user
+    user: {
+      name: user?.name,
+      email: user?.email,
+      pictureURL: user?.pictureURL,
+      leetcode: profile?.leetcode,
+      codeforces: profile?.codeforces,
+      mongoId: userId
+    }
   });
 });
 
@@ -83,8 +99,10 @@ app.post('/signin', async (req, res) => {
   const personalInfo = {
     name: user?.name,
     email: user?.email,
+    pictureURL: user?.pictureURL,
     leetcode: profile?.leetcode,
-    codeforces: profile?.codeforces
+    codeforces: profile?.codeforces,
+    mongoId: userId
   }
   if (user) {
     const hashPassword = user.password;
@@ -146,6 +164,7 @@ app.use('/api/codeforces', auth, codeforcesRoute);
 app.use('/api/leetcode', auth, leetcodeRoute);
 app.use("/api/heatmap", heatmapRouter);
 app.use("/api/compare", compareRouter);
+app.use("/api/upcomingContests", upcomingContestsRouter);
 
 
 //add a auth middleware, if not verified, redirect to login page

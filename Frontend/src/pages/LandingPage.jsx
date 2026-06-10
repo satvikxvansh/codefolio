@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useInView, useAnimation, AnimatePresence } from "framer-motion";
 import {
   Code2, Trophy, Users, TrendingUp, Zap, ChevronRight,
-  Star, GitBranch, BarChart2, Globe, Shield, ArrowRight,
+  Star, BarChart2, Globe, Shield, ArrowRight,
   Terminal, Flame, Target, Activity, Menu, X, ExternalLink
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -44,7 +44,7 @@ function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const links = ["Features", "Stats", "Compare", "Platforms", "Pricing"];
+  const links = ["Features", "Stats", "Compare", "Platforms"];
 
   return (
     <motion.nav
@@ -59,8 +59,8 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
-            <Code2 size={16} className="text-black" strokeWidth={2.5} />
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+            <img src="/logo.png" alt="Logo" />
           </div>
           <span className="text-white font-bold text-lg tracking-tight font-mono">Codefolio</span>
         </div>
@@ -77,13 +77,13 @@ function Navbar() {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <button className="text-sm text-gray-400 hover:text-white transition-colors px-4 py-2">Sign In</button>
+          <Link to="/login" className="text-sm text-gray-400 hover:text-white transition-colors px-4 py-2">Sign In</Link>
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-bold px-5 py-2 rounded-lg transition-colors"
           >
-            Get Started
+            <Link to="/login">Get Started</Link>
           </motion.button>
         </div>
 
@@ -156,7 +156,7 @@ function Hero() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
         >
-          Codefolio unifies your LeetCode, Codeforces, and more into one competitive dashboard. 
+          Codefolio unifies your LeetCode, Codeforces, and more into one competitive dashboard.
           Track streaks, ratings, and rank—then challenge your peers.
         </motion.p>
 
@@ -193,17 +193,40 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-500"
         >
-          <div className="flex -space-x-2">
-            {["🧑‍💻", "👩‍💻", "🧑‍💻", "👨‍💻", "👩‍💻"].map((e, i) => (
-              <div key={i} className="w-8 h-8 rounded-full bg-gray-700 border-2 border-[#0d1117] flex items-center justify-center text-sm">{e}</div>
-            ))}
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-white font-semibold">Open Source</span>
+            </span>
+            <span className="text-gray-700">·</span>
+            <span>Free to use</span>
+            <span className="text-gray-700">·</span>
+            <span>No ads</span>
           </div>
-          <span><span className="text-white font-semibold">12,000+</span> coders already tracking</span>
+          <span><span className="text-white font-semibold">10+</span> coders already tracking</span>
           <span className="hidden sm:block text-gray-700">|</span>
-          <div className="flex items-center gap-1">
-            {[1,2,3,4,5].map(i => <Star key={i} size={13} className="text-emerald-400 fill-emerald-400" />)}
-            <span className="ml-1"><span className="text-white font-semibold">4.9</span> rating</span>
-          </div>
+          <a href="https://github.com/satvikxvansh/codefolio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482
+                       0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.34-3.369-1.34-.454-1.154-1.11-1.462-1.11-1.462
+                       -.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832
+                       .092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683
+                       -.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59
+                       0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699
+                       1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852
+                       0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12
+                       22 6.477 17.523 2 12 2z" />
+            </svg>
+            <span className="text-sm font-semibold text-white">Star on GitHub</span>
+            <span className="flex items-center gap-1 bg-white/[0.07] border border-white/[0.1] text-xs font-mono text-gray-300 px-2 py-0.5 rounded-full">
+              <Star size={10} className="text-yellow-400 fill-yellow-400" />
+              6
+            </span>
+          </a>
         </motion.div>
       </div>
 
@@ -275,12 +298,12 @@ function Hero() {
 
 // --- Stats section ---
 function StatsSection() {
-  const stats = [
-    { value: 12000, suffix: "+", label: "Active Users", icon: Users },
-    { value: 850000, suffix: "+", label: "Problems Tracked", icon: Target },
-    { value: 50, suffix: "+", label: "Countries", icon: Globe },
-    { value: 98, suffix: "%", label: "Uptime", icon: Activity },
-  ];
+const stats = [
+  { value: 10, suffix: "+", label: "Registered Users", icon: Users },
+  { value: 1000, suffix: "+", label: "Problems Analyzed", icon: Target },
+  { value: 50, suffix: "+", label: "Coding Contests Tracked", icon: Globe },
+  { value: 99, suffix: "%", label: "API Uptime", icon: Activity },
+];
 
   return (
     <section id="stats" className="relative py-24 px-6">
@@ -496,12 +519,12 @@ function CompareSection() {
 // --- Platforms ---
 function Platforms() {
   const platforms = [
-    { name: "LeetCode", color: "#FFA116", problems: "3000+", desc: "DSA problems & weekly contests" },
-    { name: "Codeforces", color: "#1890ff", problems: "8000+", desc: "Competitive programming rounds" },
-    { name: "CodeChef", color: "#6E4C1E", problems: "5000+", desc: "Long challenges & cookoffs" },
-    { name: "HackerRank", color: "#00EA64", problems: "4000+", desc: "Skill certifications & tracks" },
-    { name: "AtCoder", color: "#888", problems: "6000+", desc: "Japanese CP competitions" },
-    { name: "GeeksforGeeks", color: "#2F8D46", problems: "10k+", desc: "Placement & interview prep" },
+    { name: "LeetCode", color: "#FFA116", problems: "3000+", desc: "DSA problems & weekly contests", available: true },
+    { name: "Codeforces", color: "#1890ff", problems: "8000+", desc: "Competitive programming rounds", available: true },
+    { name: "CodeChef", color: "#6E4C1E", problems: "5000+", desc: "Long challenges & cookoffs", available: false },
+    { name: "HackerRank", color: "#00EA64", problems: "4000+", desc: "Skill certifications & tracks", available: false },
+    { name: "AtCoder", color: "#888", problems: "6000+", desc: "Japanese CP competitions", available: false },
+    { name: "GeeksforGeeks", color: "#2F8D46", problems: "10k+", desc: "Placement & interview prep", available: false },
   ];
 
   return (
@@ -522,26 +545,46 @@ function Platforms() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {platforms.map(({ name, color, problems, desc }, i) => (
+          {platforms.map(({ name, color, problems, desc, available }, i) => (
             <motion.div
               key={name}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.07 }}
-              whileHover={{ scale: 1.02 }}
-              className="group flex items-start gap-4 bg-[#161b22] border border-gray-800 hover:border-gray-700 rounded-xl p-5 transition-all cursor-default"
+              whileHover={{ scale: available ? 1.02 : 1 }}
+              className={`group flex items-start gap-4 rounded-xl p-5 transition-all border
+                ${available
+                  ? "bg-[#161b22] border-gray-800 hover:border-gray-700 cursor-default"
+                  : "bg-[#161b22]/50 border-gray-800/50 opacity-50 cursor-not-allowed"}`}
             >
-              <div className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center font-black text-sm"
-                style={{ backgroundColor: `${color}20`, color, border: `1px solid ${color}40` }}>
+              <div
+                className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center font-black text-sm"
+                style={{
+                  backgroundColor: available ? `${color}20` : "rgba(255,255,255,0.04)",
+                  color: available ? color : "#4b5563",
+                  border: `1px solid ${available ? `${color}40` : "rgba(255,255,255,0.06)"}`,
+                }}
+              >
                 {name[0]}
               </div>
-              <div>
+              <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-white font-bold text-sm">{name}</h3>
-                  <span className="text-[10px] font-mono text-gray-500">{problems} problems</span>
+                  <h3 className={`font-bold text-sm ${available ? "text-white" : "text-gray-500"}`}>
+                    {name}
+                  </h3>
+                  {available
+                    ? <span className="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10
+                             border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                      Live
+                    </span>
+                    : <span className="text-[9px] font-mono text-gray-600 bg-white/[0.04]
+                             border border-white/[0.06] px-2 py-0.5 rounded-full">
+                      Coming soon
+                    </span>
+                  }
                 </div>
-                <p className="text-xs text-gray-500">{desc}</p>
+                <p className={`text-xs ${available ? "text-gray-500" : "text-gray-700"}`}>{desc}</p>
               </div>
             </motion.div>
           ))}
@@ -555,103 +598,6 @@ function Platforms() {
         >
           + More platforms coming soon · <span className="text-emerald-500 cursor-pointer hover:text-emerald-400">Request a platform →</span>
         </motion.p>
-      </div>
-    </section>
-  );
-}
-
-// --- Pricing ---
-function Pricing() {
-  const plans = [
-    {
-      name: "Free",
-      price: "0",
-      desc: "For casual coders just getting started.",
-      features: ["2 platforms connected", "Basic stats dashboard", "Public profile link", "30-day history"],
-      cta: "Get Started Free",
-      highlight: false,
-    },
-    {
-      name: "Pro",
-      price: "4",
-      desc: "For serious competitive programmers.",
-      features: ["Unlimited platforms", "Full analytics & heatmaps", "Friend comparisons", "Contest history & graphs", "Priority sync", "Embed in portfolio"],
-      cta: "Start Pro",
-      highlight: true,
-    },
-    {
-      name: "Team",
-      price: "12",
-      desc: "For coding clubs and CP teams.",
-      features: ["Everything in Pro", "Team leaderboard", "Group comparison views", "Admin dashboard", "Custom team URL", "Early feature access"],
-      cta: "Start Team Trial",
-      highlight: false,
-    },
-  ];
-
-  return (
-    <section id="pricing" className="relative py-24 px-6">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <span className="text-emerald-400 text-sm font-mono font-semibold tracking-widest uppercase">Pricing</span>
-          <h2 className="text-4xl md:text-5xl font-black text-white mt-3 mb-4">Simple pricing.</h2>
-          <p className="text-gray-400">Start free. Upgrade when you're ready to get serious.</p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {plans.map(({ name, price, desc, features, cta, highlight }, i) => (
-            <motion.div
-              key={name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className={cn(
-                "relative rounded-2xl p-7 border transition-all",
-                highlight
-                  ? "bg-emerald-600 border-emerald-500 shadow-xl shadow-emerald-900/30"
-                  : "bg-[#161b22] border-gray-800"
-              )}
-            >
-              {highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-black px-4 py-1 rounded-full">
-                  MOST POPULAR
-                </div>
-              )}
-              <p className={cn("text-sm font-semibold mb-1", highlight ? "text-emerald-100" : "text-gray-400")}>{name}</p>
-              <div className="flex items-end gap-1 mb-2">
-                <span className={cn("text-4xl font-black", highlight ? "text-white" : "text-white")}>${price}</span>
-                <span className={cn("text-sm mb-1", highlight ? "text-emerald-200" : "text-gray-500")}>/mo</span>
-              </div>
-              <p className={cn("text-xs mb-6", highlight ? "text-emerald-200" : "text-gray-500")}>{desc}</p>
-              <ul className="space-y-2 mb-8">
-                {features.map((f) => (
-                  <li key={f} className={cn("flex items-start gap-2 text-sm", highlight ? "text-white" : "text-gray-300")}>
-                    <span className={cn("mt-0.5 text-xs", highlight ? "text-emerald-200" : "text-emerald-400")}>✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className={cn(
-                  "w-full py-3 rounded-xl font-bold text-sm transition-colors",
-                  highlight
-                    ? "bg-black text-white hover:bg-gray-900"
-                    : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
-                )}
-              >
-                {cta}
-              </motion.button>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -687,7 +633,7 @@ function CTABanner() {
               whileTap={{ scale: 0.95 }}
               className="bg-black text-white font-bold px-10 py-4 rounded-xl text-base hover:bg-gray-900 transition-colors inline-flex items-center gap-2"
             >
-              Create your free profile
+              <Link to="/login">Create your free profile</Link>
               <ArrowRight size={18} />
             </motion.button>
           </div>
@@ -703,15 +649,15 @@ function Footer() {
     <footer className="border-t border-gray-800 py-12 px-6">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center">
-            <Code2 size={14} className="text-black" strokeWidth={2.5} />
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+            <img src="/logo.png" alt="Logo" />
           </div>
           <span className="text-white font-bold font-mono">Codefolio</span>
         </div>
-        <p className="text-gray-600 text-sm">© 2026 Codefolio. Built with love by Satvik Vansh.</p>
+        <p className="text-gray-600 text-sm">© 2026 Codefolio. Built with Joy by Satvik Vansh.</p>
         <div className="flex items-center gap-6 text-sm text-gray-500">
-          {["Privacy", "Terms", "Contact"].map((l) => (
-            <a key={l} href="#" className="hover:text-gray-300 transition-colors">{l}</a>
+          {["Contact"].map((l) => (
+            <a key={l} href="https://satvikvansh.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">{l}</a>
           ))}
         </div>
       </div>
@@ -731,7 +677,6 @@ export default function App() {
       <Features />
       <CompareSection />
       <Platforms />
-      <Pricing />
       <CTABanner />
       <Footer />
     </div>

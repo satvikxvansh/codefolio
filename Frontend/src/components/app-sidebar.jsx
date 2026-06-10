@@ -1,5 +1,7 @@
-import { UserSearch, Swords, Home, Search, Settings, PanelLeftIcon } from "lucide-react"
+import { UserSearch, Swords, Home, Search, LogOut , PanelLeftIcon } from "lucide-react"
 import { NavLink } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 import {
   Sidebar,
@@ -45,6 +47,22 @@ const items = [
 ]
 
 export function AppSidebar() {
+
+  const navigate = useNavigate();
+  const BACKEND_URL = import.meta.env.VITE_API_KEY;
+
+
+  const logout = async () => {
+    await axios.post(`${BACKEND_URL}/logout`, {}, {
+      withCredentials: true
+    }).then(() => {
+      console.log("logged out")
+    }).catch(error => {
+      console.log(error);
+    })
+    navigate("/login");
+  }
+
   const { toggleSidebar } = useSidebar()
   return (
     <Sidebar collapsible="icon" variant="sidebar">
@@ -58,7 +76,7 @@ export function AppSidebar() {
             <SidebarMenu className="">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton className="pl-4" asChild>
+                  <SidebarMenuButton className="pl-4 hover:bg-emerald-500 transition-all " asChild>
                     <NavLink to={item.route}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -82,11 +100,11 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton className="pl-3" asChild>
-              <a className="cursor-pointer">
-                <Settings />
-                <span>Settings</span>
-              </a>
+            <SidebarMenuButton className="pl-3 hover:bg-red-400 transition-all " asChild>
+              <button className="cursor-pointer " onClick={logout}>
+                <LogOut  />
+                <span>Log Out</span>
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -94,41 +112,3 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-
-
-// import {
-//   Sidebar,
-//   SidebarContent,
-//   SidebarFooter,
-//   SidebarGroup,
-//   SidebarGroupLabel,
-//   SidebarHeader,
-//   SidebarMenu,
-//   SidebarMenuItem,
-// } from "@/components/ui/sidebar"
-
-// export function AppSidebar() {
-//   return (
-//     <Sidebar>
-//       <SidebarHeader className="p-4 font-semibold">
-//         My App
-//       </SidebarHeader>
-
-//       <SidebarContent>
-//         <SidebarGroup>
-//           <SidebarGroupLabel>Application</SidebarGroupLabel>
-
-//           <SidebarMenu>
-//             <SidebarMenuItem>Dashboard</SidebarMenuItem>
-//             <SidebarMenuItem>Profile</SidebarMenuItem>
-//             <SidebarMenuItem>Settings</SidebarMenuItem>
-//           </SidebarMenu>
-//         </SidebarGroup>
-//       </SidebarContent>
-
-//       <SidebarFooter className="p-4 text-sm">
-//         © 2026
-//       </SidebarFooter>
-//     </Sidebar>
-//   )
-// }

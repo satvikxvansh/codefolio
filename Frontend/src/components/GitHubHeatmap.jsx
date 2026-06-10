@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GitBranch, GitMerge, Star, BookMarked, Github, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 const BACKEND_URL = import.meta.env.VITE_API_KEY;
 
@@ -79,6 +79,7 @@ export default function GitHubHeatmap({ cfHandle, lcUsername }) {
       if (!res.ok) throw new Error(data.error || "Failed to fetch heatmap");
 
       const data = await res.json();
+      console.log(data);
       setWeeks(calendarToWeeks(data.calendar));
       setTotal(data.summary.totalSubmissions);
     } catch (e) {

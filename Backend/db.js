@@ -10,28 +10,18 @@ const connectDB = async () => {
     .catch(err => console.error('Could not connect to Database', err));
 }
 
+const LeetcodeData = require("./models/LeetcodeData.js");
+const CodeforcesData = require("./models/CodeforcesData.js");
+
+
 const Users = new Schema({
     name: String,
     email: {type: String, unique:true },
     password: String,
+    pictureURL: String,
     profile: { type: Schema.Types.ObjectId, ref: "profile" },
-})
-
-const Leetcode = new Schema({
-    id: ObjectId,
-    username: String,
-    problemSolved: Number,
-    constestAttended: Number,
-    currentRating: Number,
-    maxRating: Number
-})
-const Codeforces = new Schema({
-    id: ObjectId,
-    username: String,
-    problemSolved: Number,
-    constestAttended: Number,
-    currentRating: Number,
-    maxRating: Number
+    leetcode: { type: Schema.Types.ObjectId, ref: "LeetcodeData" },
+    codeforces: { type: mongoose.Schema.Types.ObjectId, ref: "CodeforcesData" },
 })
 
 const Profile = new Schema({
@@ -41,14 +31,11 @@ const Profile = new Schema({
 });
 
 const userModel = mongoose.model('users', Users);
-const leetcodeModel = mongoose.model('leetcode', Leetcode);
-const codeforcesModel = mongoose.model('codeforces', Codeforces);
+
 const profileModel = mongoose.model('profile', Profile);
 
 module.exports = {
     userModel: userModel,
-    leetcodeModel: leetcodeModel,
-    codeforcesModel: codeforcesModel,
     profileModel: profileModel,
     connectDB: connectDB,
 }
