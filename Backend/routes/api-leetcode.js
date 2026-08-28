@@ -1,19 +1,14 @@
 // Endpoints:
 //   GET  /api/leetcode/userData?username=neal_wu   → reads from DB
 //   POST /api/leetcode/updateData                  → calls LC API, writes to DB
-//
 // ─────────────────────────────────────────────────────────────────────────────
 
 const express      = require("express");
 const LeetcodeData = require("../models/LeetcodeData.js");
-// Replace the path below with wherever your User model lives
 const { userModel } = require("../db.js");
 
 const router = express.Router();
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPER — the same GraphQL query your original endpoint used
-// ─────────────────────────────────────────────────────────────────────────────
 const LC_QUERY = `
   query getUserProfile($username: String!) {
     allQuestionsCount {
@@ -76,7 +71,7 @@ async function fetchFromLeetCode(username) {
     throw new Error(`LeetCode API responded with status ${response.status}`);
   }
 
-  const json = await response.json();
+  const json = await response.json(); // converted response from leetcode API into JSON.
 
   if (!json?.data?.matchedUser) {
     throw new Error(`LeetCode user "${username}" not found`);
@@ -204,12 +199,14 @@ router.post("/updateData", async (req, res) => {
     }
     
     // ── 2. Fetch fresh data from LeetCode ─────────────────────────────────
-    const rawData   = await fetchFromLeetCode(username);
-    const shaped    = shapeLCData(rawData);
+    const rawData = await fetchFromLeetCode(username);
+    const shaped = shapeLCData(rawData);
+
     if (user) {
       user.pictureURL = shaped?.profile.userAvatar;
       await user.save(); 
     }
+    
     // ── 3. Upsert into DB (create if not exists, update if exists) ────────
     const doc = await LeetcodeData.findOneAndUpdate(
       { user: userId },                // find by linked user

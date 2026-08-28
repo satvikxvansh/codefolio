@@ -64,8 +64,7 @@ function ContestCard({ contest, index }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.35 }}
-      className="relative bg-white/[0.03] border border-white/[0.06]
-                 hover:border-white/[0.1] rounded-xl p-4 transition-colors group"
+      className="relative bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.1] rounded-xl p-4 transition-colors group"
     >
       {/* Platform pill */}
       <div className="flex items-center justify-between mb-3">
@@ -77,8 +76,7 @@ function ContestCard({ contest, index }) {
           </span>
         </div>
         {/* Duration badge */}
-        <span className="text-[9px] font-mono text-gray-600 bg-white/[0.04]
-                         border border-white/[0.06] px-2 py-0.5 rounded-full">
+        <span className="text-[9px] font-mono text-gray-600 bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded-full">
           {formatDuration(contest.duration)}
         </span>
       </div>
@@ -91,8 +89,7 @@ function ContestCard({ contest, index }) {
       {/* Countdown */}
       <div className={`flex items-center gap-1.5 mb-1 ${isImminent ? "animate-pulse" : ""}`}>
         <Clock size={11} className={isImminent ? "text-red-400" : "text-gray-600"} />
-        <span className={`font-mono font-black text-lg tracking-tight
-                         ${isImminent ? "text-red-400" : "text-white"}`}>
+        <span className={`font-mono font-black text-lg tracking-tight ${isImminent ? "text-red-400" : "text-white"}`}>
           {timeLeft > 0 ? formatCountdown(timeLeft) : "Live now"}
         </span>
       </div>
@@ -105,8 +102,7 @@ function ContestCard({ contest, index }) {
         href={contest.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg
-                   text-xs font-bold transition-all border"
+        className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-xs font-bold transition-all border"
         style={{
           background:   p.bg,
           borderColor:  p.border,

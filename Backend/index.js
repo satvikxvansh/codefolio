@@ -12,6 +12,7 @@ const PORT = 3000;
 require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
+connectDB();
 
 const codeforcesRoute = require("./routes/api-codeforces.js");
 const leetcodeRoute = require("./routes/api-leetcode.js");
@@ -19,8 +20,6 @@ const heatmapRouter = require("./routes/Heatmap");
 const compareRouter = require("./routes/Compare.js");
 const upcomingContestsRouter = require("./routes/upcomingContests.js");
 
-
-connectDB();
 
 app.use(cors({
   origin: process.env.  CLIENT_ORIGIN,
@@ -31,7 +30,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-  res.send("I am working fine dude");
+  res.send("I am working fine.");
+});
+
+app.get('/check', (req, res) => {
+  console.log("This prints to the server terminal");
+  res.send("Hello World");
 });
 
 app.get('/me', auth, async (req, res) => {
@@ -55,7 +59,16 @@ app.get('/me', auth, async (req, res) => {
 app.post('/signup', async (req, res) => {
   const name = req.body.fullName
   const email = req.body.email
-  const password = await bcrypt.hash(req.body.password, 10);
+  const password = await bcrypt.hash(req.body.password, 10); // 10 is salt round, 2^10 iterations when rotating the password.
+  
+  const user = await userModel.findOne({ email: email });
+
+  if(user){
+    return res.status(201).json({
+      status: 'FAILED',
+      message: "An account with this email address already exists. Please log in instead, or use a different email to sign up."
+    });
+  }
 
   await userModel.create({
     name: name,
@@ -63,11 +76,13 @@ app.post('/signup', async (req, res) => {
     password: password
   }).then(user => {
     console.log("User data created, name: ", user.name)
-    const token = jwt.sign({
+
+    const token = jwt.sign({ // JWT token created.
       name: user.name,
       email: user.email,
       userId: user._id
     }, JWT_SECRET);
+
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
@@ -83,20 +98,19 @@ app.post('/signup', async (req, res) => {
   // res.json({message: "you are signed in"})
 })
 
-app.get('/check', (req, res) => {
-  console.log("This prints to the server terminal");
-  res.send("Hello World");
-});
-
 app.post('/signin', async (req, res) => {
   const email = req.body.email
   const password = req.body.password
   const user = await userModel.findOne({ email: email });
 
-  const userId = user._id;
-  const profile = await profileModel.findOne({ userId }).populate("userId");
+  if(!user){
+    return res.status(201).json({status: 'FAILED', message: "User not found. Please Sign Up." });
+  }
 
-  const personalInfo = {
+  const userId = user._id;
+  const profile = await profileModel.findOne({ userId }).populate("userId"); // .populate() is used to temporarily replace the reference with the actual data from that reference.
+
+  const personalInfo = {  // data to be send back as response to the client.
     name: user?.name,
     email: user?.email,
     pictureURL: user?.pictureURL,
@@ -104,36 +118,40 @@ app.post('/signin', async (req, res) => {
     codeforces: profile?.codeforces,
     mongoId: userId
   }
+
   if (user) {
     const hashPassword = user.password;
     const result = await bcrypt.compare(password, hashPassword);
-    // console.log(result);
-    console.log("password", password);
-    console.log("hash password", hashPassword);
+
     if (result) {
-      const token = jwt.sign({
+
+      const token = jwt.sign({  // JWT token is created.
         name: user.name,
         email: email,
         userId: user._id
       }, JWT_SECRET);
-      res.cookie('token', token, {
+
+      res.cookie('token', token, {  // JWT token is set as cookie to be sent to the client.
         httpOnly: true,
         secure: true,
         sameSite: "none"
       })
-      res.json(personalInfo);  //sending platform IDs as a response
+
       console.log(personalInfo);
       console.log("Cookie has been created")
-      res.status(201).json({ message: "Signin successful" }); //always send response status otherwise frontend api call will keep waiting forever
+
+      res.status(201).json({
+        status: 'OK',
+        message: "Signin successful",
+        personalInfo: personalInfo // This contains your platform IDs
+      });
     } else {
-      console.log('Invalid password');
-      return null;
+      return res.status(203).json({status: 'FAILED', message: "Password is Wrong" });
     }
   } else {
     console.log('No user found with email:', userEmail);
-    res.status(203).json({ message: "Signin successful" });
+    return res.status(203).json({status: 'FAILED', message: "No user found with this email" });
   }
-  // res.json({message: "you are signed in"})
 })
 
 app.post('/logout', (req, res) => {

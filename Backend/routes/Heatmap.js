@@ -16,6 +16,7 @@ const limiter = rateLimit({
   max: 20,
   message: { error: "Too many requests, please slow down." },
 });
+
 router.use(limiter);
 
 // ── Constants ─────────────────────────────────────────────────────────────────

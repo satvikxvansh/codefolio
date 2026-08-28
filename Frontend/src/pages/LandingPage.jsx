@@ -10,7 +10,7 @@ import Particles from "../components/Particles.jsx"
 import GridBg from "../components/GridBg.jsx"
 
 // --- Utility ---
-const cn = (...classes) => classes.filter(Boolean).join(" ");
+  const cn = (...classes) => classes.filter(Boolean).join(" ");
 
 // --- Animated counter ---
 function Counter({ to, duration = 2 }) {

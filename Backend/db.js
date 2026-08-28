@@ -13,7 +13,6 @@ const connectDB = async () => {
 const LeetcodeData = require("./models/LeetcodeData.js");
 const CodeforcesData = require("./models/CodeforcesData.js");
 
-
 const Users = new Schema({
     name: String,
     email: {type: String, unique:true },
@@ -31,7 +30,6 @@ const Profile = new Schema({
 });
 
 const userModel = mongoose.model('users', Users);
-
 const profileModel = mongoose.model('profile', Profile);
 
 module.exports = {

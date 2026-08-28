@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Layout from '@/components/layout.jsx';
 import { useLoader } from '@/components/Contexts/loaderContext';
 import { Spinner } from '@/components/ui/spinner';
-import { motion, useInView, useAnimation, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { div } from 'framer-motion/client';
 
 
@@ -28,7 +28,7 @@ const Home = () => {
         ]
       }
     </AnimatePresence>
-      <Layout>
+      <Layout> // Sidebar layout
         <Outlet />
       </Layout>
     </>

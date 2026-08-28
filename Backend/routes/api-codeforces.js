@@ -95,7 +95,6 @@ async function fetchFromCodeforces(username) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/codeforces/userData?username=tourist
-//
 // Reads cached data from DB.
 // Returns 404 with needsSync: true if user hasn't synced yet.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -106,7 +105,7 @@ router.get("/userData", async (req, res) => {
   }
 
   try {
-    const doc = await CodeforcesData.findOne({ username });
+    const doc = await CodeforcesData.findOne({ username }); // change 'username' to '_id' of the user in the future because username is not Primary Key.
 
     if (!doc) {
       return res.status(404).json({
@@ -133,7 +132,7 @@ router.get("/userData", async (req, res) => {
 router.post("/updateData", async (req, res) => {
   const { userId, username } = req.body;
 
-  console.log(req.body)
+  // console.log(req.body)
 
   if (!userId || !username) {
     return res.status(400).json({

@@ -25,9 +25,9 @@ const CodingProfileDashboard = () => {
     if(user?.leetcode && user?.codeforces){
       setFormData({leetcode: user?.leetcode, codeforces: user?.codeforces});
     }
-    console.log("user", user);
-    console.log("formData", formData);
-  }, [  ])
+    // console.log("user", user);
+    // console.log("formData", formData);
+  }, [])
 
   const ratingInfo = [
     {
@@ -62,7 +62,7 @@ const CodingProfileDashboard = () => {
   console.log("LeetcodeData updated:", LeetcodeData);
 }, [LeetcodeData]);
 
-  // API calls
+  // Leetcode API calls
   useEffect(() => {
     if (!formData?.leetcode) return;
 
@@ -75,7 +75,7 @@ const CodingProfileDashboard = () => {
           { withCredentials: true }
         );
         setLeetcodeData(res.data.data);
-        console.log("/api/leetcode/userData response: ", res.data.data);
+        // console.log("/api/leetcode/userData response: ", res.data.data);
         
       } catch (err) {
         // 2. If never synced, trigger a sync automatically
@@ -101,7 +101,7 @@ const CodingProfileDashboard = () => {
     fetchLeetcodeData();
   }, [formData]);
 
-  // Codeforces Data API call
+  // Codeforces API call
   useEffect(() => {
     // console.log("formData:", formData);
     if (!formData?.codeforces) return;

@@ -1,4 +1,3 @@
-
 // Endpoint:
 //   GET /api/compare/leetcode?user1=neal_wu&user2=tourist
 // ─────────────────────────────────────────────────────────────────────────────

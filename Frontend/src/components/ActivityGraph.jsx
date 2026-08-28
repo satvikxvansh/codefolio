@@ -1,15 +1,3 @@
-// ─── File: components/ActivityGraph.jsx ──────────────────────────────────────
-// npm install recharts framer-motion lucide-react  (already installed)
-//
-// Usage:
-//   import ActivityGraph from "./components/ActivityGraph";
-//   <ActivityGraph
-//     cfHandle="tourist"
-//     lcUsername="neal_wu"
-//     backendUrl={BACKEND_URL}
-//   />
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {

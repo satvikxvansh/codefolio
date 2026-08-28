@@ -46,7 +46,7 @@ function Tooltip({ day, visible, x, y }) {
   );
 }
 
-
+// converts the contribution calendar object into a 52-week × 7-day array for rendering a contribution heatmap.
 function calendarToWeeks(calendar) {
   const weeks = [];
   const now = new Date();
@@ -55,7 +55,7 @@ function calendarToWeeks(calendar) {
     for (let d = 0; d < 7; d++) {
       const date = new Date(now);
       date.setDate(date.getDate() - (w * 7 + (6 - d)));
-      const key = date.toISOString().split("T")[0];
+      const key = date.toISOString().split("T")[0];   // toISOString to convert Date object into a ISO type String.
       days.push({ date: key, count: calendar[key] || 0 });
     }
     weeks.push(days);
@@ -79,7 +79,7 @@ export default function GitHubHeatmap({ cfHandle, lcUsername }) {
       if (!res.ok) throw new Error(data.error || "Failed to fetch heatmap");
 
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       setWeeks(calendarToWeeks(data.calendar));
       setTotal(data.summary.totalSubmissions);
     } catch (e) {
@@ -93,6 +93,8 @@ export default function GitHubHeatmap({ cfHandle, lcUsername }) {
 
   // Month labels
   const monthLabels = [];
+  
+  // Iterates through weeks and records the starting week index whenever a new month begins, so month names can be displayed above a heatmap.
   if (weeks.length) {
     let lastMonth = null;
     weeks.forEach((week, wi) => {

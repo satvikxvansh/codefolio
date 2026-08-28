@@ -70,8 +70,7 @@ function StatCard({ label, value, icon: Icon, color, index }) {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.4 + index * 0.12, duration: 0.5, ease: "easeOut" }}
-      className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.07] 
-                 rounded-xl px-4 py-3 hover:bg-white/[0.07] transition-colors duration-200"
+      className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.07] rounded-xl px-4 py-3 hover:bg-white/[0.07] transition-colors duration-200"
     >
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -115,9 +114,15 @@ const LoginPage = () => {
     if (isSignUp) {
       await axios.post(`${BACKEND_URL}/signup`, formData, { withCredentials: true })
         .then(res => {
-          login(res.data);
+          if(res.data.status === 'OK'){
+            login(res.data.personalInfo);
+            // console.log(res.data.personalInfo);
+            isLoading(false);
+            navigate("/user/Dashboard");
+          } else {
+            alert(res.data.message);
+          }
           isLoading(false);
-          navigate("/user/Dashboard");
         }).catch((err) => {
           console.log("couldn't send post request to backend", err);
         })
@@ -125,15 +130,19 @@ const LoginPage = () => {
       // console.log('Sign In:', formData);
       await axios.post(`${BACKEND_URL}/signin`, formData, { withCredentials: true })
         .then(res => {
-          login(res.data);
-          console.log(res.data);
+          if(res.data.status === 'OK'){
+            login(res.data.personalInfo);
+            // console.log(res.data.personalInfo);
+            isLoading(false);
+            navigate("/user/Dashboard");
+          } else {
+            alert(res.data.message);
+          }
           isLoading(false);
-          navigate("/user/Dashboard");
         }).catch(err => {
           console.log("couldn't send post request to backend", err);
         })
     }
-    // setIsLoading(false);
   };
 
   return (
@@ -375,6 +384,10 @@ const LoginPage = () => {
                 whileTap={{ scale: 0.96 }}
                 className="hover:cursor-pointer group flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-8 py-3 rounded-xl text-base transition-colors"
               >
+                {isLoading
+                &&
+                <span className="spinner"></span>
+                }
                 {isSignUp ? 'Sign Up' : 'Sign In'}
                 <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </motion.button>

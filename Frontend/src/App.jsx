@@ -23,11 +23,9 @@ function App() {
     })
       .then(res => {
         login(res.data.user);
-        // setIsLoggedIn(true);
       })
       .catch(() => {
         console.log("Auth Failed from /me endpoint");
-        // setIsLoggedIn(false);
       })
       .finally(() => {
         setTimeout(()=>{
