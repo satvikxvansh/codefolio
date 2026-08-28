@@ -30,7 +30,7 @@ const UsernameModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Pass data back to parent component
-    await axios.post("http://localhost:3000/platformdetails",
+    await axios.post(`${BACKEND_URL}/platformdetails`,
       formData, { 
       withCredentials: true 
     });
