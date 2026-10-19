@@ -1,7 +1,7 @@
 const express        = require("express");
 const axios          = require("axios");
 const CodeforcesData = require("../models/CodeforcesData");
-const { userModel } = require("../db.js");
+const { userModel, profileModel } = require("../db.js");
 
 const router = express.Router();
 router.use(express.json());
@@ -99,13 +99,21 @@ async function fetchFromCodeforces(username) {
 // Returns 404 with needsSync: true if user hasn't synced yet.
 // ─────────────────────────────────────────────────────────────────────────────
 router.get("/userData", async (req, res) => {
-  const { username } = req.query;
+  let { username } = req.query;
+  if (!username && req.user?.userId) {
+    const profile = await profileModel.findOne({ userId: req.user.userId });
+    username = profile?.codeforces;
+  }
+
   if (!username) {
     return res.status(400).json({ error: "username query param is required" });
   }
 
   try {
-    const doc = await CodeforcesData.findOne({ username }); // change 'username' to '_id' of the user in the future because username is not Primary Key.
+    let doc = await CodeforcesData.findOne({ username: new RegExp(`^${username}$`, "i") });
+    if (!doc && req.user?.userId) {
+      doc = await CodeforcesData.findOne({ user: req.user.userId });
+    }
 
     if (!doc) {
       return res.status(404).json({
@@ -130,19 +138,29 @@ router.get("/userData", async (req, res) => {
 // Call on first setup and whenever the user clicks "Sync Data".
 // ─────────────────────────────────────────────────────────────────────────────
 router.post("/updateData", async (req, res) => {
-  const { userId, username } = req.body;
+  const targetUserId = req.body.userId || req.user?.userId;
+  let username = req.body.username;
 
-  // console.log(req.body)
-
-  if (!userId || !username) {
+  if (!targetUserId) {
     return res.status(400).json({
-      error: "Both userId and username are required in the request body",
+      error: "userId is required",
+    });
+  }
+
+  if (!username) {
+    const profile = await profileModel.findOne({ userId: targetUserId });
+    username = profile?.codeforces;
+  }
+
+  if (!username) {
+    return res.status(400).json({
+      error: "username is required",
     });
   }
 
   try {
     // ── 1. Verify user exists in your DB ──────────────────────────────────
-    const user = await userModel.findById(userId);
+    const user = await userModel.findById(targetUserId);
     if (!user) {
       return res.status(404).json({ error: "User not found in database" });
     }
@@ -152,9 +170,21 @@ router.post("/updateData", async (req, res) => {
 
     // ── 3. Upsert into DB ─────────────────────────────────────────────────
     const doc = await CodeforcesData.findOneAndUpdate(
-      { user: userId },
-      { ...shaped, user: userId },
+      { user: targetUserId },
+      { ...shaped, user: targetUserId },
       { upsert: true, new: true }
+    );
+
+    if (user && !user.codeforces) {
+      user.codeforces = doc._id;
+      await user.save();
+    }
+
+    // Keep profileModel in sync
+    await profileModel.findOneAndUpdate(
+      { userId: targetUserId },
+      { $set: { codeforces: username } },
+      { upsert: true }
     );
 
     return res.json({
@@ -166,7 +196,7 @@ router.post("/updateData", async (req, res) => {
   } catch (err) {
     console.error("[codeforces/updateData]", err);
 
-    if (err.message.includes("not found")) {
+    if (err.message && err.message.includes("not found")) {
       return res.status(404).json({ error: err.message });
     }
 

@@ -5,7 +5,7 @@
 
 const express      = require("express");
 const LeetcodeData = require("../models/LeetcodeData.js");
-const { userModel } = require("../db.js");
+const { userModel, profileModel } = require("../db.js");
 
 const router = express.Router();
 
@@ -153,13 +153,21 @@ function shapeLCData(data) {
 // Returns 404 if the user hasn't synced yet (prompt frontend to call /updateData).
 // ─────────────────────────────────────────────────────────────────────────────
 router.get("/userData", async (req, res) => {
-  const { username } = req.query;
+  let { username } = req.query;
+  if (!username && req.user?.userId) {
+    const profile = await profileModel.findOne({ userId: req.user.userId });
+    username = profile?.leetcode;
+  }
+
   if (!username) {
     return res.status(400).json({ error: "username query param is required" });
   }
 
   try {
-    const doc = await LeetcodeData.findOne({ username });
+    let doc = await LeetcodeData.findOne({ username: new RegExp(`^${username}$`, "i") });
+    if (!doc && req.user?.userId) {
+      doc = await LeetcodeData.findOne({ user: req.user.userId });
+    }
 
     if (!doc) {
       // No cached data yet — tell frontend to trigger a sync first
@@ -185,15 +193,25 @@ router.get("/userData", async (req, res) => {
 // Call this on first setup and whenever the user clicks "Sync Data".
 // ─────────────────────────────────────────────────────────────────────────────
 router.post("/updateData", async (req, res) => {
-  const { userId, username } = req.body;
+  const targetUserId = req.body.userId || req.user?.userId;
+  let username = req.body.username;
 
-  if (!userId || !username) {
-    return res.status(400).json({ error: "Both userId and username are required in the request body" });
+  if (!targetUserId) {
+    return res.status(400).json({ error: "userId is required" });
+  }
+
+  if (!username) {
+    const profile = await profileModel.findOne({ userId: targetUserId });
+    username = profile?.leetcode;
+  }
+
+  if (!username) {
+    return res.status(400).json({ error: "username is required" });
   }
 
   try {
     // ── 1. Verify the user exists in your DB ──────────────────────────────
-    const user = await userModel.findById(userId);
+    const user = await userModel.findById(targetUserId);
     if (!user) {
       return res.status(404).json({ error: "User not found in database" });
     }
@@ -202,16 +220,26 @@ router.post("/updateData", async (req, res) => {
     const rawData = await fetchFromLeetCode(username);
     const shaped = shapeLCData(rawData);
 
-    if (user) {
-      user.pictureURL = shaped?.profile.userAvatar;
-      await user.save(); 
-    }
-    
     // ── 3. Upsert into DB (create if not exists, update if exists) ────────
     const doc = await LeetcodeData.findOneAndUpdate(
-      { user: userId },                // find by linked user
-      { ...shaped, user: userId },     // update with fresh data
-      { upsert: true, new: true }      // create if missing, return updated doc
+      { user: targetUserId },                // find by linked user
+      { ...shaped, user: targetUserId },     // update with fresh data
+      { upsert: true, new: true }            // create if missing, return updated doc
+    );
+
+    if (user) {
+      if (shaped?.profile?.userAvatar) {
+        user.pictureURL = shaped.profile.userAvatar;
+      }
+      user.leetcode = doc._id;
+      await user.save(); 
+    }
+
+    // Keep profileModel in sync
+    await profileModel.findOneAndUpdate(
+      { userId: targetUserId },
+      { $set: { leetcode: username } },
+      { upsert: true }
     );
 
     return res.json({
@@ -224,7 +252,7 @@ router.post("/updateData", async (req, res) => {
     console.error("[leetcode/updateData]", err);
 
     // Distinguish LC API errors from DB errors for clearer frontend messages
-    if (err.message.includes("not found") || err.message.includes("status 4")) {
+    if (err.message && (err.message.includes("not found") || err.message.includes("status 4"))) {
       return res.status(404).json({ error: err.message });
     }
 

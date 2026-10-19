@@ -161,22 +161,28 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/platformdetails', auth, async (req, res) => {
-  const leetcode = req.body.leetcode
-  const codeforces = req.body.codeforces
+  try {
+    const leetcode = req.body.leetcode;
+    const codeforces = req.body.codeforces;
+    const userId = req.user.userId;
 
-  // console.log(leetcode, codeforces, req.user.userId)
+    const profile = await profileModel.findOneAndUpdate(
+      { userId },
+      { $set: { leetcode, codeforces } },
+      { upsert: true, new: true }
+    );
 
-  await profileModel.create({
-    userId: req.user.userId,
-    leetcode: leetcode,
-    codeforces: codeforces
-  }).then(() => {
-    console.log("platform details added");
-    res.status(201).json({ message: "platform details successfully added to the database" });
-  }).catch(err => {
-    console.log(err);
-  })
-})
+    await userModel.findByIdAndUpdate(userId, { profile: profile._id });
+
+    return res.status(200).json({
+      message: "Platform details successfully saved",
+      profile
+    });
+  } catch (err) {
+    console.error("Error saving platform details:", err);
+    return res.status(500).json({ error: "Failed to save platform details" });
+  }
+});
 
 app.use('/api/codeforces', auth, codeforcesRoute);
 app.use('/api/leetcode', auth, leetcodeRoute);

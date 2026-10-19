@@ -1,8 +1,10 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ArrowUp , TrendingUp, ExternalLink, Award, Target, Calendar, Activity, CirclePlus } from 'lucide-react';
+import { ArrowUp, TrendingUp, ExternalLink, Award, Target, Calendar, Activity, CirclePlus } from 'lucide-react';
 import UsernameModal from '../components/UsernameModal';
 import { useAuth } from "../components/Contexts/AuthContext";
+import { useLoader } from "../components/Contexts/loaderContext";
+import RefreshButton from "../components/RefreshButton";
 import GitHubHeatmap from "../components/GitHubHeatmap";
 import ActivityGraph from "../components/ActivityGraph";
 import UpcomingContests from "../components/UpcomingContests";
@@ -11,56 +13,153 @@ import DashboardSkeleton from "../components/DashboardSkeleton";
 const BACKEND_URL = import.meta.env.VITE_API_KEY;
 
 const CodingProfileDashboard = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
+  const { isSync } = useLoader();
   const [isCFLoading, setIsCFLoading] = useState(true);
   const [isLCLoading, setIsLCLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState(null);
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
   const [codeforcesData, setCodeforcesData] = useState({});
   const [LeetcodeData, setLeetcodeData] = useState(null);
-  
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshSuccess, setRefreshSuccess] = useState(false);
+  const [refreshFeedback, setRefreshFeedback] = useState(null);
+  const [selectedContestPlatform, setSelectedContestPlatform] = useState('leetcode');
 
   useEffect(() => {
-    if(user?.leetcode && user?.codeforces){
-      setFormData({leetcode: user?.leetcode, codeforces: user?.codeforces});
+    if (user?.leetcode || user?.codeforces) {
+      setFormData({
+        leetcode: user?.leetcode || '',
+        codeforces: user?.codeforces || '',
+      });
     }
-    // console.log("user", user);
-    // console.log("formData", formData);
-  }, [])
+  }, [user]);
 
-  const ratingInfo = [
-    {
-      "rating": (LeetcodeData?.contest?.rating ?? 0),
-      "maxRating": (LeetcodeData?.contest?.rating ?? 0)
-    },
-    {
-      "rating": (codeforcesData?.rating?.current ?? 0),
-      "maxRating": (codeforcesData?.rating?.max ?? 0)
-    }
-
-  ]
-  const [contestInfo, setContestInfo] = useState({});
-
-  useEffect(() => {
-    if (ratingInfo?.[0]?.rating && !contestInfo?.rating) {
-      setContestInfo(ratingInfo[0]);
-    }
-  }, [ratingInfo]);
+  const displayedContestInfo = selectedContestPlatform === 'leetcode'
+    ? {
+        rating: LeetcodeData?.contest?.rating ?? 0,
+        maxRating: LeetcodeData?.contest?.rating ?? 0,
+        attended: LeetcodeData?.contest?.attendedContestsCount ?? 0,
+      }
+    : {
+        rating: codeforcesData?.rating?.current ?? 0,
+        maxRating: codeforcesData?.rating?.max ?? 0,
+        attended: codeforcesData?.contestsAttended ?? 0,
+      };
 
   const closeModal = () => {
     setShowModal(false);
-  }
+  };
 
-  const onSubmit = (formData) => {
-    setFormData(formData)
+  const onSubmit = (newFormData) => {
+    setFormData(newFormData);
+    if (login && user) {
+      login({
+        ...user,
+        leetcode: newFormData.leetcode,
+        codeforces: newFormData.codeforces,
+      });
+    }
     setShowModal(false);
-    console.log(formData); //console log formData
-  }
+  };
 
-  useEffect(() => {
-  console.log("LeetcodeData updated:", LeetcodeData);
-}, [LeetcodeData]);
+  const getLatestSyncTime = () => {
+    const dates = [LeetcodeData?.lastSyncedAt, codeforcesData?.lastSyncedAt]
+      .filter(Boolean)
+      .map((d) => new Date(d).getTime());
+    if (dates.length === 0) return null;
+    return new Date(Math.max(...dates));
+  };
+
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+    if (!formData?.leetcode && !formData?.codeforces) {
+      setShowModal(true);
+      return;
+    }
+
+    setIsRefreshing(true);
+    setRefreshFeedback(null);
+    setRefreshSuccess(false);
+    if (isSync) isSync(true);
+
+    try {
+      const tasks = [];
+
+      if (formData?.leetcode) {
+        tasks.push(
+          axios.post(
+            `${BACKEND_URL}/api/leetcode/updateData`,
+            { userId: user?.mongoId, username: formData.leetcode },
+            { withCredentials: true }
+          ).then((res) => {
+            if (res.data?.data) {
+              setLeetcodeData(res.data.data);
+            }
+            return { platform: 'LeetCode', success: true };
+          }).catch((err) => {
+            console.error("LeetCode refresh failed:", err);
+            return {
+              platform: 'LeetCode',
+              success: false,
+              error: err.response?.data?.error || err.message,
+            };
+          })
+        );
+      }
+
+      if (formData?.codeforces) {
+        tasks.push(
+          axios.post(
+            `${BACKEND_URL}/api/codeforces/updateData`,
+            { userId: user?.mongoId, username: formData.codeforces },
+            { withCredentials: true }
+          ).then((res) => {
+            if (res.data?.data) {
+              setCodeforcesData(res.data.data);
+            }
+            return { platform: 'Codeforces', success: true };
+          }).catch((err) => {
+            console.error("Codeforces refresh failed:", err);
+            return {
+              platform: 'Codeforces',
+              success: false,
+              error: err.response?.data?.error || err.message,
+            };
+          })
+        );
+      }
+
+      const results = await Promise.all(tasks);
+      const failures = results.filter((r) => !r.success);
+
+      if (failures.length === 0) {
+        setRefreshSuccess(true);
+        setTimeout(() => setRefreshSuccess(false), 3000);
+      } else if (failures.length === results.length) {
+        setRefreshFeedback({
+          type: 'error',
+          message: "Failed to update statistics from coding platforms. Please verify usernames or try again.",
+        });
+      } else {
+        const failedPlatforms = failures.map((f) => f.platform).join(', ');
+        setRefreshFeedback({
+          type: 'warning',
+          message: `Partially updated. Could not refresh: ${failedPlatforms}.`,
+        });
+      }
+    } catch (err) {
+      console.error("Error refreshing stats:", err);
+      setRefreshFeedback({
+        type: 'error',
+        message: "An unexpected error occurred while updating data.",
+      });
+    } finally {
+      setIsRefreshing(false);
+      if (isSync) isSync(false);
+    }
+  };
 
   // Leetcode API calls
   useEffect(() => {
@@ -158,9 +257,13 @@ const CodingProfileDashboard = () => {
             </div>
             <h1 className="text-2xl font-bold font-grotesk text-zinc-200">Codefolio</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <button className="cursor-pointer px-4 py-2 bg-emerald-600 text-gray-100 rounded-lg hover:bg-gray-100 hover:text-emerald-600 transition-colors font-medium" onClick={() => setShowModal(true)}>
-              Sync Data
+          <div className="flex items-center gap-3">
+            <button
+              className="cursor-pointer px-3.5 py-2 bg-zinc-800 text-gray-200 rounded-lg hover:bg-zinc-700 transition-colors font-medium text-sm border border-zinc-700"
+              onClick={() => setShowModal(true)}
+              title="Connect or edit platform handles"
+            >
+              {formData?.leetcode || formData?.codeforces ? "Edit Handles" : "Connect Platforms"}
             </button>
             <UsernameModal isOpen={showModal} onClose={closeModal} onSubmit={onSubmit} />
             <div className="flex items-center gap-3">
@@ -181,10 +284,42 @@ const CodingProfileDashboard = () => {
       {/* Dashboard */}
       {formData ? 
         <main className="flex-1 flex flex-col px-8 py-6 bg-zinc-800 rounded-tl-2xl">
-          <div className="mb-6">
-            <h2 className="text-3xl font-bodoni italic text-zinc-200">Dashboard</h2>
-            <p className="text-gray-500 mt-1">Track your competitive programming journey across platforms.</p>
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bodoni italic text-zinc-200">Dashboard</h2>
+              <p className="text-gray-500 mt-1">Track your competitive programming journey across platforms.</p>
+            </div>
+
+            {/* ── UPDATE / REFRESH BUTTON ──────────────────────────────────────────
+                Positioned in the dashboard action bar.
+                To change position, simply move this <RefreshButton ... /> component. */}
+            <div className="flex items-center gap-3">
+              <RefreshButton
+                onRefresh={handleRefresh}
+                isRefreshing={isRefreshing}
+                lastSyncedAt={getLatestSyncTime()}
+                success={refreshSuccess}
+              />
+            </div>
           </div>
+
+          {/* Feedback message banner if refresh encounter issues */}
+          {refreshFeedback && (
+            <div className={`mb-4 px-4 py-2.5 rounded-lg text-sm flex items-center justify-between ${
+              refreshFeedback.type === 'error'
+                ? 'bg-red-900/40 border border-red-700/60 text-red-200'
+                : 'bg-yellow-900/40 border border-yellow-700/60 text-yellow-200'
+            }`}>
+              <span>{refreshFeedback.message}</span>
+              <button
+                type="button"
+                onClick={() => setRefreshFeedback(null)}
+                className="text-xs text-zinc-400 hover:text-white cursor-pointer ml-4"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
           {!isLoading ?
             <>
@@ -253,17 +388,33 @@ const CodingProfileDashboard = () => {
                     </div>
                   </div>
                   <div className="text-6xl font-roboto font-semibold text-zinc-200 my-4">
-                    <h2>{parseInt(contestInfo?.rating || 0)}</h2>
-                    <p className='text-xl'>(max. {(parseInt(contestInfo?.maxRating) || 0)})</p>
+                    <h2>{parseInt(displayedContestInfo?.rating || 0)}</h2>
+                    <p className='text-xl'>(max. {(parseInt(displayedContestInfo?.maxRating) || 0)})</p>
                   </div>
                   <div className='text-base'>
                     <div className='flex justify-between'>
-                      <button onClick={()=>setContestInfo(ratingInfo?.[0])} className='text-zinc-300 cursor-pointer hover:bg-gray-50/10'>Leetcode</button>
-                      <p className='text-gray-400'>{LeetcodeData?.contest?.attendedContestsCount} Attended</p>
+                      <button
+                        onClick={() => setSelectedContestPlatform('leetcode')}
+                        className={`cursor-pointer hover:bg-gray-50/10 px-1 rounded transition-colors ${
+                          selectedContestPlatform === 'leetcode' ? 'text-emerald-400 font-semibold' : 'text-zinc-300'
+                        }`}
+                      >
+                        Leetcode
+                      </button>
+                      <p className='text-gray-400'>{LeetcodeData?.contest?.attendedContestsCount ?? 0} Attended</p>
                     </div>
-                    <div onClick={()=>setContestInfo(ratingInfo?.[1])} className='flex justify-between'>
-                      <button className='text-zinc-300 cursor-pointer hover:bg-gray-50/10'>Codeforces</button>
-                      <p className='text-gray-400'>{codeforcesData?.contestsAttended} Attended</p>
+                    <div
+                      onClick={() => setSelectedContestPlatform('codeforces')}
+                      className='flex justify-between'
+                    >
+                      <button
+                        className={`cursor-pointer hover:bg-gray-50/10 px-1 rounded transition-colors ${
+                          selectedContestPlatform === 'codeforces' ? 'text-emerald-400 font-semibold' : 'text-zinc-300'
+                        }`}
+                      >
+                        Codeforces
+                      </button>
+                      <p className='text-gray-400'>{codeforcesData?.contestsAttended ?? 0} Attended</p>
                     </div>
                   </div>
                 </div>

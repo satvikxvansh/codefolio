@@ -28,7 +28,7 @@ const Home = () => {
         ]
       }
     </AnimatePresence>
-      <Layout> // Sidebar layout
+      <Layout>
         <Outlet />
       </Layout>
     </>
