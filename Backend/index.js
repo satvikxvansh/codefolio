@@ -64,7 +64,7 @@ app.post('/signup', async (req, res) => {
   const user = await userModel.findOne({ email: email });
 
   if(user){
-    return res.status(201).json({
+    return res.status(400).json({
       status: 'FAILED',
       message: "An account with this email address already exists. Please log in instead, or use a different email to sign up."
     });
@@ -104,7 +104,7 @@ app.post('/signin', async (req, res) => {
   const user = await userModel.findOne({ email: email });
 
   if(!user){
-    return res.status(201).json({status: 'FAILED', message: "User not found. Please Sign Up." });
+    return res.status(400).json({status: 'FAILED', message: "User not found. Please Sign Up." });
   }
 
   const userId = user._id;
