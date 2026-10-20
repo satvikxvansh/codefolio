@@ -99,60 +99,65 @@ app.post('/signup', async (req, res) => {
 })
 
 app.post('/signin', async (req, res) => {
-  const email = req.body.email
-  const password = req.body.password
-  const user = await userModel.findOne({ email: email });
+  try {
+    const { email, password } = req.body;
 
-  if(!user){
-    return res.status(400).json({status: 'FAILED', message: "User not found. Please Sign Up." });
-  }
-
-  const userId = user._id;
-  const profile = await profileModel.findOne({ userId }).populate("userId"); // .populate() is used to temporarily replace the reference with the actual data from that reference.
-
-  const personalInfo = {  // data to be send back as response to the client.
-    name: user?.name,
-    email: user?.email,
-    pictureURL: user?.pictureURL,
-    leetcode: profile?.leetcode,
-    codeforces: profile?.codeforces,
-    mongoId: userId
-  }
-
-  if (user) {
-    const hashPassword = user.password;
-    const result = await bcrypt.compare(password, hashPassword);
-
-    if (result) {
-
-      const token = jwt.sign({  // JWT token is created.
-        name: user.name,
-        email: email,
-        userId: user._id
-      }, JWT_SECRET);
-
-      res.cookie('token', token, {  // JWT token is set as cookie to be sent to the client.
-        httpOnly: true,
-        secure: true,
-        sameSite: "none"
-      })
-
-      console.log(personalInfo);
-      console.log("Cookie has been created")
-
-      res.status(201).json({
-        status: 'OK',
-        message: "Signin successful",
-        personalInfo: personalInfo // This contains your platform IDs
-      });
-    } else {
-      return res.status(203).json({status: 'FAILED', message: "Password is Wrong" });
+    if (!email || !password) {
+      return res.status(400).json({ status: 'FAILED', message: "Email and password are required" });
     }
-  } else {
-    console.log('No user found with email:', userEmail);
-    return res.status(203).json({status: 'FAILED', message: "No user found with this email" });
+
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ status: 'FAILED', message: "User not found. Please Sign Up." });
+    }
+
+    // Guard against corrupted or missing password field
+    if (!user.password) {
+      return res.status(500).json({ status: 'FAILED', message: "User account password record is invalid." });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(203).json({ status: 'FAILED', message: "Password is Wrong" });
+    }
+
+    // Safely look up profile
+    const profile = await profileModel.findOne({ userId: user._id });
+
+    const token = jwt.sign(
+      {
+        name: user.name,
+        email: user.email,
+        userId: user._id
+      },
+      JWT_SECRET
+    );
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    });
+
+    const personalInfo = {
+      name: user.name,
+      email: user.email,
+      pictureURL: user.pictureURL,
+      leetcode: profile?.leetcode,
+      codeforces: profile?.codeforces,
+      mongoId: user._id
+    };
+
+    return res.status(200).json({
+      status: 'OK',
+      message: "Signin successful",
+      personalInfo
+    });
+  } catch (err) {
+    console.error("Error in /signin:", err);
+    return res.status(500).json({ status: 'FAILED', message: err.message });
   }
-})
+});
 
 app.post('/logout', (req, res) => {
   res.clearCookie('token');
